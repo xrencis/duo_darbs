@@ -1,3 +1,6 @@
+<?php
+require_once '../check_session.php';
+?>
 <!DOCTYPE html>
 <html lang="lv">
 <head>
@@ -13,7 +16,7 @@
             <li><span class="icon">📦</span> Izvietot preces</li>
             <li><span class="icon">📄</span> Sagatavot atskaiti</li>
             <li><span class="icon">📝</span> Datu ievade</li>
-            <li><span class="icon">↩️</span> Iziet</li>
+            <li><span class="icon">↩️</span> <a href="../logout.php" style="text-decoration: none; color: inherit;">Iziet</a></li>
         </ul>
     </div>
     <div class="main">

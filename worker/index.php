@@ -1,3 +1,6 @@
+<?php
+require_once '../check_session.php';
+?>
 <!DOCTYPE html>
 <html lang="lv">
 <head>
@@ -12,7 +15,7 @@
             <li><span class="icon">🏠</span> Sākums</li>
             <li><span class="icon">🚚</span> Veikt pasūtījumu</li>
             <li><span class="icon">📄</span> Izveidot atskaiti</li>
-            <li><span class="icon">↩️</span> Iziet</li>
+            <li><span class="icon">↩️</span> <a href="../logout.php" style="text-decoration: none; color: inherit;">Iziet</a></li>
         </ul>
     </div>
     <div class="main">
