@@ -1,0 +1,78 @@
+document.addEventListener('DOMContentLoaded',loadProducts);
+function loadProducts(){
+ fetch('products.php',{method:'POST',body:new URLSearchParams({action:'fetch'})})
+ .then(r=>r.json()).then(showProducts);
+}
+function showProducts(data){
+ let t=document.querySelector('table');
+ t.innerHTML='<tr><th>Produkts</th><th>Kategorija</th><th>Cena</th><th>Firmas ID</th><th>Daudzums</th><th>Darbības</th></tr>';
+ data.forEach(row=>{
+  let tr=document.createElement('tr');
+  tr.innerHTML=`<td>${row.name}</td><td>${row.category}</td><td>${row.price}</td><td>${row.firm}</td><td>${row.qty}</td><td><button class='delete' onclick='deleteProduct(${row.id})'>Dzēst</button> <button class='edit' onclick='editProduct(${row.id})'>Rediģēt</button></td>`;
+  t.appendChild(tr);
+ });
+}
+function deleteProduct(id){
+ fetch('products.php',{method:'POST',body:new URLSearchParams({action:'delete',id})})
+ .then(()=>loadProducts());
+}
+function editProduct(id){
+ fetch('products.php',{
+  method:'POST',
+  body:new URLSearchParams({action:'fetch'})
+ }).then(r=>r.json()).then(data=>{
+  let prod=data.find(p=>p.id==id);
+  if(prod){
+   document.getElementById('edit-id').value=prod.id;
+   document.getElementById('edit-name').value=prod.name;
+   document.getElementById('edit-category').value=prod.category;
+   document.getElementById('edit-price').value=prod.price;
+   document.getElementById('edit-firm').value=prod.firm;
+   document.getElementById('edit-qty').value=prod.qty;
+   document.getElementById('edit-modal-overlay').classList.add('active');
+  }
+ });
+}
+function closeEditModal(){
+ document.getElementById('edit-modal-overlay').classList.remove('active');
+}
+function saveEditProduct(){
+ let id=document.getElementById('edit-id').value;
+ let name=document.getElementById('edit-name').value;
+ let category=document.getElementById('edit-category').value;
+ let price=document.getElementById('edit-price').value;
+ let firm=document.getElementById('edit-firm').value;
+ let qty=document.getElementById('edit-qty').value;
+ fetch('products.php',{
+  method:'POST',
+  body:new URLSearchParams({action:'edit',id,name,category,price,firm,qty})
+ }).then(()=>{
+  closeEditModal();
+  loadProducts();
+ });
+}
+document.getElementById('show-add-form').onclick=function(){
+ document.getElementById('add-modal-overlay').classList.add('active');
+};
+function closeAddModal(){
+ document.getElementById('add-modal-overlay').classList.remove('active');
+}
+function addProduct(){
+ let name=document.getElementById('add-name').value;
+ let category=document.getElementById('add-category').value;
+ let price=document.getElementById('add-price').value;
+ let firm=document.getElementById('add-firm').value;
+ let qty=document.getElementById('add-qty').value;
+ fetch('products.php',{
+  method:'POST',
+  body:new URLSearchParams({action:'add',name,category,price,firm,qty})
+ }).then(()=>{
+  document.getElementById('add-name').value='';
+  document.getElementById('add-category').value='';
+  document.getElementById('add-price').value='';
+  document.getElementById('add-firm').value='';
+  document.getElementById('add-qty').value='';
+  closeAddModal();
+  loadProducts();
+ });
+} 
