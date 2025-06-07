@@ -9,6 +9,11 @@ require_once '../check_session.php';
     <link rel="stylesheet" href="../css/admin/style.css">
 </head>
 <body>
+    <div class="user-profile">
+        <span class="icon">👤</span>
+        <span class="username"><?php echo htmlspecialchars($_SESSION['username']); ?></span>
+        <span class="role">(Administrators)</span>
+    </div>
     <div class="sidebar">
         <div class="logo"> <span class="icon">🏠</span> <span>STASH</span> </div>
         <ul>

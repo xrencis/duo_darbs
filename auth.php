@@ -2,7 +2,7 @@
 session_start();
 
 // Database connection
-$db = new mysqli('localhost', 'root', '', 'stash_db');
+$db = new mysqli('localhost', 'root', '', 'stash');
 
 if ($db->connect_error) {
     die(json_encode(['success' => false, 'message' => 'Datubāzes kļūda']));

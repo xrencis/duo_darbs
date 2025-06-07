@@ -28,4 +28,32 @@ button { padding: 8px 18px; border: none; border-radius: 3px; margin-right: 8px;
 .modal-box button:first-child {background:#43b047;color:#fff;}
 .modal-box button:first-child:hover {background:#388a3a;}
 .modal-box button:last-child {background:#eee;color:#222;}
-.modal-box button:last-child:hover {background:#ccc;} 
+.modal-box button:last-child:hover {background:#ccc;}
+
+.user-profile {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.user-profile .icon {
+    font-size: 1.2em;
+}
+
+.user-profile .username {
+    font-weight: bold;
+    color: #333;
+}
+
+.user-profile .role {
+    color: #666;
+    font-size: 0.9em;
+} 
