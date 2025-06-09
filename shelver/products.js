@@ -17,7 +17,37 @@ function deleteProduct(id){
  .then(()=>loadProducts());
 }
 function editProduct(id){
- let vals=prompt('Ievadiet: nosaukums,kategorija,cena,firmas id,daudzums').split(',');
- fetch('products.php',{method:'POST',body:new URLSearchParams({action:'edit',id,name:vals[0],category:vals[1],price:vals[2],firm:vals[3],qty:vals[4]})})
- .then(()=>loadProducts());
+ fetch('products.php',{
+  method:'POST',
+  body:new URLSearchParams({action:'fetch'})
+ }).then(r=>r.json()).then(data=>{
+  let prod=data.find(p=>p.id==id);
+  if(prod){
+   document.getElementById('edit-id').value=prod.id;
+   document.getElementById('edit-name').value=prod.name;
+   document.getElementById('edit-category').value=prod.category;
+   document.getElementById('edit-price').value=prod.price;
+   document.getElementById('edit-firm').value=prod.firm;
+   document.getElementById('edit-qty').value=prod.qty;
+   document.getElementById('edit-modal-overlay').classList.add('active');
+  }
+ });
+}
+function closeEditModal(){
+ document.getElementById('edit-modal-overlay').classList.remove('active');
+}
+function saveEditProduct(){
+ let id=document.getElementById('edit-id').value;
+ let name=document.getElementById('edit-name').value;
+ let category=document.getElementById('edit-category').value;
+ let price=document.getElementById('edit-price').value;
+ let firm=document.getElementById('edit-firm').value;
+ let qty=document.getElementById('edit-qty').value;
+ fetch('products.php',{
+  method:'POST',
+  body:new URLSearchParams({action:'edit',id,name,category,price,firm,qty})
+ }).then(()=>{
+  closeEditModal();
+  loadProducts();
+ });
 } 
