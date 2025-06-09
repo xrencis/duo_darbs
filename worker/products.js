@@ -24,10 +24,15 @@ function editProduct(id){
   let prod=data.find(p=>p.id==id);
   if(prod){
    document.getElementById('edit-id').value=prod.id;
+   document.getElementById('edit-name-label').textContent = `Nosaukums: ${prod.name}`;
    document.getElementById('edit-name').value=prod.name;
+   document.getElementById('edit-category-label').textContent = `Kategorija: ${prod.category}`;
    document.getElementById('edit-category').value=prod.category;
+   document.getElementById('edit-price-label').textContent = `Cena: ${prod.price}`;
    document.getElementById('edit-price').value=prod.price;
+   document.getElementById('edit-firm-label').textContent = `Firmas ID: ${prod.firm}`;
    document.getElementById('edit-firm').value=prod.firm;
+   document.getElementById('edit-qty-label').textContent = `Daudzums: ${prod.qty}`;
    document.getElementById('edit-qty').value=prod.qty;
    document.getElementById('edit-modal-overlay').classList.add('active');
   }
