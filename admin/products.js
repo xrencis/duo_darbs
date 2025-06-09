@@ -133,4 +133,89 @@ function addUser() {
             alert(data.message);
         }
     });
+}
+document.addEventListener('DOMContentLoaded', function() {
+    const usersButton = document.getElementById('show-users');
+    if (usersButton) {
+        usersButton.addEventListener('click', function() {
+            console.log('Users button clicked');
+            loadUsers();
+            document.getElementById('user-list-modal-overlay').classList.add('active');
+        });
+    } else {
+        console.error('Users button not found');
+    }
+});
+function closeUserListModal() {
+    document.getElementById('user-list-modal-overlay').classList.remove('active');
+}
+function loadUsers() {
+    console.log('Loading users...');
+    
+    // First test if PHP is working
+    fetch('test.php')
+        .then(response => {
+            console.log('Test response status:', response.status);
+            return response.text();
+        })
+        .then(text => {
+            console.log('Test raw response:', text);
+            try {
+                const testData = JSON.parse(text);
+                console.log('Test parsed data:', testData);
+                // If test works, proceed to get users
+                return fetch('get_users.php');
+            } catch (e) {
+                console.error('Test failed:', e);
+                throw new Error('PHP test failed. Response: ' + text);
+            }
+        })
+        .then(response => {
+            console.log('Users response status:', response.status);
+            return response.text();
+        })
+        .then(text => {
+            console.log('Users raw response:', text);
+            try {
+                return JSON.parse(text);
+            } catch (e) {
+                console.error('Failed to parse users JSON. Response:', text);
+                throw new Error('Invalid JSON response. Response: ' + text);
+            }
+        })
+        .then(data => {
+            console.log('Parsed users data:', data);
+            if (data.success) {
+                const container = document.getElementById('user-list-container');
+                container.innerHTML = '';
+                
+                if (data.users && data.users.length > 0) {
+                    data.users.forEach(user => {
+                        const userDiv = document.createElement('div');
+                        userDiv.className = 'user-list-item';
+                        
+                        const usernameSpan = document.createElement('span');
+                        usernameSpan.textContent = user.username;
+                        
+                        const roleSpan = document.createElement('span');
+                        roleSpan.className = `user-role role-${user.role}`;
+                        roleSpan.textContent = user.role;
+                        
+                        userDiv.appendChild(usernameSpan);
+                        userDiv.appendChild(roleSpan);
+                        container.appendChild(userDiv);
+                    });
+                } else {
+                    container.innerHTML = '<div class="user-list-item">Nav atrasts neviens lietotājs</div>';
+                }
+            } else {
+                console.error('Server error:', data.message);
+                alert(data.message || 'Kļūda ielādējot lietotājus');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const container = document.getElementById('user-list-container');
+            container.innerHTML = `<div class="user-list-item">Kļūda: ${error.message}</div>`;
+        });
 } 

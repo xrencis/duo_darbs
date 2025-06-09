@@ -20,7 +20,7 @@ require_once '../check_session.php';
             <li><span class="icon">🏠</span> Sākums</li>
             <li><span class="icon">➕</span> <span id="show-add-form">Pievienot produktu</span></li>
             <li><span class="icon">➕</span> <span id="show-add-user">Pievienot lietotāju</span></li>
-            <li><span class="icon">👤</span> Lietotāji</li>
+            <li><span class="icon">👤</span> <span id="show-users">Lietotāji</span></li>
             <li><span class="icon">↩️</span> <a href="../logout.php" style="text-decoration: none; color: inherit;">Iziet</a></li>
         </ul>
     </div>
@@ -107,5 +107,20 @@ require_once '../check_session.php';
         </table>
     </div>
     <script src="products.js"></script>
+
+    <!-- User List Modal -->
+    <div id="user-list-modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Lietotāju saraksts</h2>
+                <button onclick="closeUserListModal()" class="close-button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="user-list-container">
+                    <!-- Users will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html> 
