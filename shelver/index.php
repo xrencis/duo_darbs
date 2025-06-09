@@ -26,6 +26,21 @@ require_once '../check_session.php';
     </div>
     <div class="main">
         <h1>Produkti</h1>
+        <div class="modal-overlay" id="edit-modal-overlay">
+            <div class="modal-box" id="edit-modal">
+                <h2>Rediģēt produktu</h2>
+                <input type="hidden" id="edit-id">
+                <input type="text" id="edit-name" placeholder="Nosaukums">
+                <input type="text" id="edit-category" placeholder="Kategorija">
+                <input type="number" id="edit-price" placeholder="Cena">
+                <input type="text" id="edit-firm" placeholder="Firmas ID">
+                <input type="number" id="edit-qty" placeholder="Daudzums">
+                <div class="modal-btns">
+                    <button onclick="saveEditProduct()">Saglabāt</button>
+                    <button onclick="closeEditModal()">Aizvērt</button>
+                </div>
+            </div>
+        </div>
         <table>
             <tr>
                 <th>Produkts</th>
