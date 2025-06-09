@@ -101,4 +101,36 @@ function addProduct(){
    alert(data.message);
   }
  });
+}
+document.getElementById('show-add-user').onclick = function() {
+    document.getElementById('add-user-modal-overlay').classList.add('active');
+};
+function closeAddUserModal() {
+    document.getElementById('add-user-modal-overlay').classList.remove('active');
+}
+function addUser() {
+    let username = document.getElementById('add-user-username').value;
+    let password = document.getElementById('add-user-password').value;
+    let role = document.getElementById('add-user-role').value;
+
+    fetch('add_user.php', {
+        method: 'POST',
+        body: new URLSearchParams({
+            username: username,
+            password: password,
+            role: role
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            document.getElementById('add-user-username').value = '';
+            document.getElementById('add-user-password').value = '';
+            document.getElementById('add-user-role').value = 'worker';
+            closeAddUserModal();
+        } else {
+            alert(data.message);
+        }
+    });
 } 

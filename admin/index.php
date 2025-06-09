@@ -19,13 +19,38 @@ require_once '../check_session.php';
         <ul>
             <li><span class="icon">🏠</span> Sākums</li>
             <li><span class="icon">➕</span> <span id="show-add-form">Pievienot produktu</span></li>
-            <li><span class="icon">➕</span> Pievienot lietotāju</li>
+            <li><span class="icon">➕</span> <span id="show-add-user">Pievienot lietotāju</span></li>
             <li><span class="icon">👤</span> Lietotāji</li>
             <li><span class="icon">↩️</span> <a href="../logout.php" style="text-decoration: none; color: inherit;">Iziet</a></li>
         </ul>
     </div>
     <div class="main">
         <h1>Produkti</h1>
+        <div class="modal-overlay" id="add-user-modal-overlay">
+            <div class="modal-box" id="add-user-modal">
+                <h2>Pievienot lietotāju</h2>
+                <div class="form-group">
+                    <label id="add-user-username-label">Lietotājvārds</label>
+                    <input type="text" id="add-user-username" placeholder="Lietotājvārds">
+                </div>
+                <div class="form-group">
+                    <label id="add-user-password-label">Parole</label>
+                    <input type="password" id="add-user-password" placeholder="Parole">
+                </div>
+                <div class="form-group">
+                    <label id="add-user-role-label">Lietotāja tips</label>
+                    <select id="add-user-role">
+                        <option value="worker">Noliktavas darbinieks</option>
+                        <option value="shelver">Plauktu kārtotājs</option>
+                        <option value="admin">Administrators</option>
+                    </select>
+                </div>
+                <div class="modal-btns">
+                    <button onclick="addUser()">Pievienot</button>
+                    <button onclick="closeAddUserModal()">Aizvērt</button>
+                </div>
+            </div>
+        </div>
         <div class="modal-overlay" id="add-modal-overlay">
             <div class="modal-box" id="add-modal">
                 <h2>Pievienot produktu</h2>
