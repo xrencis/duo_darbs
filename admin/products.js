@@ -4,13 +4,22 @@ function loadProducts(){
  .then(r=>r.json()).then(showProducts);
 }
 function showProducts(data){
- let t=document.querySelector('table');
- t.innerHTML='<tr><th>Produkts</th><th>Kategorija</th><th>Cena</th><th>Firmas ID</th><th>Daudzums</th><th>Darbības</th></tr>';
- data.forEach(row=>{
-  let tr=document.createElement('tr');
-  tr.innerHTML=`<td>${row.name}</td><td>${row.category}</td><td>${row.price}</td><td>${row.firm}</td><td>${row.qty}</td><td><button class='delete' onclick='deleteProduct(${row.id})'>Dzēst</button> <button class='edit' onclick='editProduct(${row.id})'>Rediģēt</button></td>`;
-  t.appendChild(tr);
+ let table=document.querySelector('table');
+ let html='<tr><th>Produkts</th><th>Kategorija</th><th>Cena</th><th>Firmas ID</th><th>Daudzums</th><th>Darbības</th></tr>';
+ data.forEach(p=>{
+  html+=`<tr>
+   <td>${p.name}</td>
+   <td>${p.category}</td>
+   <td>${p.price}</td>
+   <td>${p.firm}</td>
+   <td>${p.qty}</td>
+   <td>
+    <button onclick="editProduct(${p.id})" class="edit">Rediģēt</button>
+    <button onclick="deleteProduct(${p.id})" class="delete">Dzēst</button>
+   </td>
+  </tr>`;
  });
+ table.innerHTML=html;
 }
 function deleteProduct(id){
  fetch('products.php',{method:'POST',body:new URLSearchParams({action:'delete',id})})
@@ -46,9 +55,15 @@ function saveEditProduct(){
  fetch('products.php',{
   method:'POST',
   body:new URLSearchParams({action:'edit',id,name,category,price,firm,qty})
- }).then(()=>{
-  closeEditModal();
-  loadProducts();
+ })
+ .then(r=>r.json())
+ .then(data=>{
+  if(data.success){
+   closeEditModal();
+   loadProducts();
+  }else{
+   alert(data.message);
+  }
  });
 }
 document.getElementById('show-add-form').onclick=function(){
@@ -66,13 +81,19 @@ function addProduct(){
  fetch('products.php',{
   method:'POST',
   body:new URLSearchParams({action:'add',name,category,price,firm,qty})
- }).then(()=>{
-  document.getElementById('add-name').value='';
-  document.getElementById('add-category').value='';
-  document.getElementById('add-price').value='';
-  document.getElementById('add-firm').value='';
-  document.getElementById('add-qty').value='';
-  closeAddModal();
-  loadProducts();
+ })
+ .then(r=>r.json())
+ .then(data=>{
+  if(data.success){
+   document.getElementById('add-name').value='';
+   document.getElementById('add-category').value='';
+   document.getElementById('add-price').value='';
+   document.getElementById('add-firm').value='';
+   document.getElementById('add-qty').value='';
+   closeAddModal();
+   loadProducts();
+  }else{
+   alert(data.message);
+  }
  });
 } 
