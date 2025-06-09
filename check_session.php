@@ -2,26 +2,37 @@
 session_start();
 
 // Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role'])) {
+    session_destroy();
     header('Location: ../login.php');
     exit();
 }
 
-// Get the current page's role requirement
+
 $current_page = basename($_SERVER['PHP_SELF']);
 $required_role = '';
 
-if (strpos($current_page, 'admin') !== false) {
+
+$current_dir = dirname($_SERVER['PHP_SELF']);
+if (strpos($current_dir, '/admin') !== false) {
     $required_role = 'admin';
-} elseif (strpos($current_page, 'worker') !== false) {
+} elseif (strpos($current_dir, '/worker') !== false) {
     $required_role = 'worker';
-} elseif (strpos($current_page, 'shelver') !== false) {
+} elseif (strpos($current_dir, '/shelver') !== false) {
     $required_role = 'shelver';
 }
 
-// Check if user has the required role
+// Strict role checking
 if ($required_role && $_SESSION['role'] !== $required_role) {
+    session_destroy();
     header('Location: ../login.php');
+    exit();
+}
+
+// Additional security: Prevent direct access to PHP files
+$allowed_files = ['index.php', 'products.php'];
+if (!in_array($current_page, $allowed_files)) {
+    header('Location: index.php');
     exit();
 }
 ?> 
