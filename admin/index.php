@@ -31,22 +31,28 @@ require_once '../check_session.php';
                 <h2>Pievienot lietotāju</h2>
                 <div class="form-group">
                     <label id="add-user-username-label">Lietotājvārds</label>
-                    <input type="text" id="add-user-username" placeholder="Lietotājvārds">
+                    <input type="text" id="add-user-username" placeholder="Lietotājvārds" 
+                           pattern="[a-zA-Z0-9_]{3,20}" 
+                           title="Lietotājvārds jābūt no 3 līdz 20 rakstzīmēm, var saturēt tikai burtus, ciparus un pasvītrojuma zīmi"
+                           required>
                 </div>
                 <div class="form-group">
                     <label id="add-user-password-label">Parole</label>
-                    <input type="password" id="add-user-password" placeholder="Parole">
+                    <input type="password" id="add-user-password" placeholder="Parole" 
+                           pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$"
+                           title="Parolei jābūt vismaz 6 rakstzīmēm garai, jāsatur vismaz viens burts un viens cipars"
+                           required>
                 </div>
                 <div class="form-group">
                     <label id="add-user-role-label">Lietotāja tips</label>
-                    <select id="add-user-role">
+                    <select id="add-user-role" required>
                         <option value="worker">Noliktavas darbinieks</option>
                         <option value="shelver">Plauktu kārtotājs</option>
                         <option value="admin">Administrators</option>
                     </select>
                 </div>
                 <div class="modal-btns">
-                    <button onclick="addUser()">Pievienot</button>
+                    <button onclick="validateAndAddUser()">Pievienot</button>
                     <button onclick="closeAddUserModal()">Aizvērt</button>
                 </div>
             </div>
@@ -54,13 +60,34 @@ require_once '../check_session.php';
         <div class="modal-overlay" id="add-modal-overlay">
             <div class="modal-box" id="add-modal">
                 <h2>Pievienot produktu</h2>
-                <input type="text" id="add-name" placeholder="Nosaukums">
-                <input type="text" id="add-category" placeholder="Kategorija">
-                <input type="number" id="add-price" placeholder="Cena">
-                <input type="text" id="add-firm" placeholder="Firmas ID">
-                <input type="number" id="add-qty" placeholder="Daudzums">
+                <div class="form-group">
+                    <label for="add-name">Nosaukums</label>
+                    <input type="text" id="add-name" placeholder="Nosaukums" required
+                           pattern="^(?![\s0]+$).+"
+                           title="Nosaukums nevar būt tukšs vai saturēt tikai nulles un atstarpes">
+                </div>
+                <div class="form-group">
+                    <label for="add-category">Kategorija</label>
+                    <input type="text" id="add-category" placeholder="Kategorija" required>
+                </div>
+                <div class="form-group">
+                    <label for="add-price">Cena</label>
+                    <input type="number" id="add-price" placeholder="Cena" required
+                           min="0.01" step="0.01"
+                           title="Cenai jābūt vismaz 0.01">
+                </div>
+                <div class="form-group">
+                    <label for="add-firm">Firmas ID</label>
+                    <input type="text" id="add-firm" placeholder="Firmas ID" required>
+                </div>
+                <div class="form-group">
+                    <label for="add-qty">Daudzums</label>
+                    <input type="number" id="add-qty" placeholder="Daudzums" required
+                           min="0"
+                           title="Daudzumam jābūt nenegatīvam skaitlim">
+                </div>
                 <div class="modal-btns">
-                    <button onclick="addProduct()">Pievienot</button>
+                    <button onclick="validateAndAddProduct()">Pievienot</button>
                     <button onclick="closeAddModal()">Aizvērt</button>
                 </div>
             </div>
@@ -71,26 +98,32 @@ require_once '../check_session.php';
                 <input type="hidden" id="edit-id">
                 <div class="form-group">
                     <label id="edit-name-label">Nosaukums</label>
-                    <input type="text" id="edit-name" placeholder="Nosaukums">
+                    <input type="text" id="edit-name" placeholder="Nosaukums" required
+                           pattern="^(?![\s0]+$).+"
+                           title="Nosaukums nevar būt tukšs vai saturēt tikai nulles un atstarpes">
                 </div>
                 <div class="form-group">
                     <label id="edit-category-label">Kategorija</label>
-                    <input type="text" id="edit-category" placeholder="Kategorija">
+                    <input type="text" id="edit-category" placeholder="Kategorija" required>
                 </div>
                 <div class="form-group">
                     <label id="edit-price-label">Cena</label>
-                    <input type="number" id="edit-price" placeholder="Cena">
+                    <input type="number" id="edit-price" placeholder="Cena" required
+                           min="0.01" step="0.01"
+                           title="Cenai jābūt vismaz 0.01">
                 </div>
                 <div class="form-group">
                     <label id="edit-firm-label">Firmas ID</label>
-                    <input type="text" id="edit-firm" placeholder="Firmas ID">
+                    <input type="text" id="edit-firm" placeholder="Firmas ID" required>
                 </div>
                 <div class="form-group">
                     <label id="edit-qty-label">Daudzums</label>
-                    <input type="number" id="edit-qty" placeholder="Daudzums">
+                    <input type="number" id="edit-qty" placeholder="Daudzums" required
+                           min="0"
+                           title="Daudzumam jābūt nenegatīvam skaitlim">
                 </div>
                 <div class="modal-btns">
-                    <button onclick="saveEditProduct()">Saglabāt</button>
+                    <button onclick="validateAndSaveEditProduct()">Saglabāt</button>
                     <button onclick="closeEditModal()">Aizvērt</button>
                 </div>
             </div>

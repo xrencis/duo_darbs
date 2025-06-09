@@ -52,6 +52,13 @@
                 return false;
             }
 
+            // Check if username contains only numbers
+            if (/^[0-9]+$/.test(username)) {
+                errorMessage.textContent = 'Lietotājvārds nevar saturēt tikai ciparus';
+                errorMessage.style.display = 'block';
+                return false;
+            }
+
             // Password validation
             if (password.length < 6) {
                 errorMessage.textContent = 'Parolei jābūt vismaz 6 rakstzīmēm garai';

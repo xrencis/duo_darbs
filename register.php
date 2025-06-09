@@ -36,6 +36,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
+    // Check if username contains only numbers
+    if (preg_match('/^[0-9]+$/', $username)) {
+        echo json_encode(['success' => false, 'message' => 'Lietotājvārds nevar saturēt tikai ciparus']);
+        exit();
+    }
+
     
     if (empty($password)) {
         echo json_encode(['success' => false, 'message' => 'Parole nevar būt tukša']);

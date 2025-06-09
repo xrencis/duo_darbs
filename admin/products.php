@@ -3,15 +3,33 @@ include '../db.php';
 header('Content-Type: application/json');
 
 function validateProductData($name, $category, $price, $firm, $qty) {
+    // Check for empty fields
     if (empty($name) || empty($category) || empty($firm)) {
         return ['valid' => false, 'message' => 'Visiem laukiem jābūt aizpildītiem'];
     }
-    
-    if (!is_numeric($price) || $price <= 0) {
-        return ['valid' => false, 'message' => 'Cenai jābūt pozitīvam skaitlim'];
+
+    // Check if name contains only zeros or spaces
+    if (preg_match('/^[0\s]+$/', $name)) {
+        return ['valid' => false, 'message' => 'Produkta nosaukums nevar saturēt tikai nulles vai atstarpes'];
     }
     
-    if (!is_numeric($qty) || $qty < 0) {
+    // Price validation
+    if (!is_numeric($price)) {
+        return ['valid' => false, 'message' => 'Cenai jābūt skaitlim'];
+    }
+    
+    $price = floatval($price);
+    if ($price < 0.01) {
+        return ['valid' => false, 'message' => 'Cenai jābūt vismaz 0.01'];
+    }
+    
+    // Quantity validation
+    if (!is_numeric($qty)) {
+        return ['valid' => false, 'message' => 'Daudzumam jābūt skaitlim'];
+    }
+    
+    $qty = intval($qty);
+    if ($qty < 0) {
         return ['valid' => false, 'message' => 'Daudzumam jābūt nenegatīvam skaitlim'];
     }
     
@@ -35,10 +53,10 @@ if ($action === 'delete') {
 
 if ($action === 'edit') {
     $id = intval($_POST['id']);
-    $name = $conn->real_escape_string($_POST['name']);
-    $cat = $conn->real_escape_string($_POST['category']);
+    $name = trim($conn->real_escape_string($_POST['name']));
+    $cat = trim($conn->real_escape_string($_POST['category']));
     $price = floatval($_POST['price']);
-    $firm = $conn->real_escape_string($_POST['firm']);
+    $firm = trim($conn->real_escape_string($_POST['firm']));
     $qty = intval($_POST['qty']);
     
     $validation = validateProductData($name, $cat, $price, $firm, $qty);
@@ -52,10 +70,10 @@ if ($action === 'edit') {
 }
 
 if ($action === 'add') {
-    $name = $conn->real_escape_string($_POST['name']);
-    $cat = $conn->real_escape_string($_POST['category']);
+    $name = trim($conn->real_escape_string($_POST['name']));
+    $cat = trim($conn->real_escape_string($_POST['category']));
     $price = floatval($_POST['price']);
-    $firm = $conn->real_escape_string($_POST['firm']);
+    $firm = trim($conn->real_escape_string($_POST['firm']));
     $qty = intval($_POST['qty']);
     
     $validation = validateProductData($name, $cat, $price, $firm, $qty);
