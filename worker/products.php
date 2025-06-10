@@ -1,6 +1,13 @@
 <?php
 include '../db.php';
 header('Content-Type: application/json');
+
+// Check and add status column if it doesn't exist
+$check_column = $conn->query("SHOW COLUMNS FROM orders LIKE 'status'");
+if ($check_column->num_rows === 0) {
+    $conn->query("ALTER TABLE orders ADD COLUMN status VARCHAR(20) DEFAULT 'pending'");
+}
+
 $action = $_POST['action'] ?? '';
 
 if ($action === 'fetch') {
@@ -141,5 +148,284 @@ if ($action === 'report') {
         echo json_encode(['error' => true, 'message' => $e->getMessage()]);
     }
     exit();
+}
+
+if ($action === 'edit') {
+    try {
+        // Validate required fields
+        $required_fields = ['id', 'name', 'category', 'price', 'firm', 'qty'];
+        foreach ($required_fields as $field) {
+            if (!isset($_POST[$field]) || empty($_POST[$field])) {
+                throw new Exception("Lauks '$field' ir obligāts!");
+            }
+        }
+
+        // Validate and sanitize inputs
+        $id = filter_var($_POST['id'], FILTER_VALIDATE_INT);
+        $name = filter_var($_POST['name'], FILTER_SANITIZE_STRING);
+        $category = filter_var($_POST['category'], FILTER_SANITIZE_STRING);
+        $price = filter_var($_POST['price'], FILTER_VALIDATE_FLOAT);
+        $firm = filter_var($_POST['firm'], FILTER_SANITIZE_STRING);
+        $qty = filter_var($_POST['qty'], FILTER_VALIDATE_INT);
+
+        // Additional validation
+        if (!$id) {
+            throw new Exception("Nederīgs produkta ID!");
+        }
+        if (strlen($name) < 2 || strlen($name) > 100) {
+            throw new Exception("Nosaukumam jābūt no 2 līdz 100 rakstzīmēm!");
+        }
+        if (strlen($category) < 2 || strlen($category) > 50) {
+            throw new Exception("Kategorijai jābūt no 2 līdz 50 rakstzīmēm!");
+        }
+        if ($price <= 0) {
+            throw new Exception("Cenai jābūt lielākai par 0!");
+        }
+        if (strlen($firm) < 2 || strlen($firm) > 50) {
+            throw new Exception("Firmas ID jābūt no 2 līdz 50 rakstzīmēm!");
+        }
+        if ($qty < 0) {
+            throw new Exception("Daudzumam jābūt nenegatīvam skaitlim!");
+        }
+
+        // Update product
+        $stmt = $conn->prepare("UPDATE products SET name = ?, category = ?, price = ?, firm = ?, qty = ? WHERE id = ?");
+        $stmt->bind_param("ssdsii", $name, $category, $price, $firm, $qty, $id);
+        
+        if ($stmt->execute()) {
+            echo json_encode(['success' => true]);
+        } else {
+            throw new Exception("Kļūda rediģējot produktu datubāzē!");
+        }
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+    exit;
+}
+
+if ($action === 'delete') {
+    try {
+        if (!isset($_POST['id']) || empty($_POST['id'])) {
+            throw new Exception("Produkta ID nav norādīts!");
+        }
+
+        $id = filter_var($_POST['id'], FILTER_VALIDATE_INT);
+        if (!$id) {
+            throw new Exception("Nederīgs produkta ID!");
+        }
+
+        // Delete product
+        $stmt = $conn->prepare("DELETE FROM products WHERE id = ?");
+        $stmt->bind_param("i", $id);
+        
+        if ($stmt->execute()) {
+            echo json_encode(['success' => true]);
+        } else {
+            throw new Exception("Kļūda dzēšot produktu datubāzē!");
+        }
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+    exit;
+}
+
+if ($action === 'add') {
+    try {
+        // Validate required fields
+        $required_fields = ['name', 'category', 'price', 'firm', 'qty'];
+        foreach ($required_fields as $field) {
+            if (!isset($_POST[$field]) || empty($_POST[$field])) {
+                throw new Exception("Lauks '$field' ir obligāts!");
+            }
+        }
+
+        // Validate and sanitize inputs
+        $name = filter_var($_POST['name'], FILTER_SANITIZE_STRING);
+        $category = filter_var($_POST['category'], FILTER_SANITIZE_STRING);
+        $price = filter_var($_POST['price'], FILTER_VALIDATE_FLOAT);
+        $firm = filter_var($_POST['firm'], FILTER_SANITIZE_STRING);
+        $qty = filter_var($_POST['qty'], FILTER_VALIDATE_INT);
+
+        // Additional validation
+        if (strlen($name) < 2 || strlen($name) > 100) {
+            throw new Exception("Nosaukumam jābūt no 2 līdz 100 rakstzīmēm!");
+        }
+        if (strlen($category) < 2 || strlen($category) > 50) {
+            throw new Exception("Kategorijai jābūt no 2 līdz 50 rakstzīmēm!");
+        }
+        if ($price <= 0) {
+            throw new Exception("Cenai jābūt lielākai par 0!");
+        }
+        if (strlen($firm) < 2 || strlen($firm) > 50) {
+            throw new Exception("Firmas ID jābūt no 2 līdz 50 rakstzīmēm!");
+        }
+        if ($qty < 0) {
+            throw new Exception("Daudzumam jābūt nenegatīvam skaitlim!");
+        }
+
+        // Insert new product
+        $stmt = $conn->prepare("INSERT INTO products (name, category, price, firm, qty) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("ssdsi", $name, $category, $price, $firm, $qty);
+        
+        if ($stmt->execute()) {
+            echo json_encode(['success' => true]);
+        } else {
+            throw new Exception("Kļūda pievienojot produktu datubāzē!");
+        }
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+    exit;
+}
+
+if ($action === 'manage_orders') {
+    try {
+        $date_from = isset($_POST['date_from']) ? $conn->real_escape_string($_POST['date_from']) : null;
+        $date_to = isset($_POST['date_to']) ? $conn->real_escape_string($_POST['date_to']) : null;
+        $status = isset($_POST['status']) ? $conn->real_escape_string($_POST['status']) : null;
+
+        $query = "SELECT o.*, p.name as product_name 
+                 FROM orders o 
+                 JOIN products p ON o.product_id = p.id 
+                 WHERE 1=1";
+        $params = [];
+        $types = "";
+
+        if ($date_from) {
+            $query .= " AND o.order_date >= ?";
+            $params[] = $date_from;
+            $types .= "s";
+        }
+        if ($date_to) {
+            $query .= " AND o.order_date <= ?";
+            $params[] = $date_to;
+            $types .= "s";
+        }
+        if ($status) {
+            $query .= " AND o.status = ?";
+            $params[] = $status;
+            $types .= "s";
+        }
+
+        $query .= " ORDER BY o.order_date DESC";
+
+        $stmt = $conn->prepare($query);
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+        
+        if (!$stmt->execute()) {
+            throw new Exception("Kļūda ielādējot pasūtījumus!");
+        }
+
+        $result = $stmt->get_result();
+        $orders = [];
+        while ($row = $result->fetch_assoc()) {
+            $orders[] = $row;
+        }
+
+        echo json_encode($orders);
+    } catch (Exception $e) {
+        echo json_encode(['error' => $e->getMessage()]);
+    }
+    exit;
+}
+
+if ($action === 'update_order_status') {
+    try {
+        if (!isset($_POST['order_id']) || !isset($_POST['status'])) {
+            throw new Exception("Trūkst nepieciešamie dati!");
+        }
+
+        $order_id = filter_var($_POST['order_id'], FILTER_VALIDATE_INT);
+        $status = filter_var($_POST['status'], FILTER_SANITIZE_STRING);
+
+        if (!$order_id) {
+            throw new Exception("Nederīgs pasūtījuma ID!");
+        }
+
+        // Validate status
+        $valid_statuses = ['pending', 'confirmed', 'completed', 'cancelled'];
+        if (!in_array($status, $valid_statuses)) {
+            throw new Exception("Nederīgs status!");
+        }
+
+        // Update order status
+        $stmt = $conn->prepare("UPDATE orders SET status = ? WHERE id = ?");
+        $stmt->bind_param("si", $status, $order_id);
+        
+        if ($stmt->execute()) {
+            echo json_encode(['success' => true]);
+        } else {
+            throw new Exception("Kļūda atjauninot pasūtījuma statusu!");
+        }
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+    exit;
+}
+
+if ($action === 'delete_order') {
+    try {
+        if (!isset($_POST['order_id'])) {
+            throw new Exception("Trūkst pasūtījuma ID!");
+        }
+
+        $order_id = filter_var($_POST['order_id'], FILTER_VALIDATE_INT);
+        if (!$order_id) {
+            throw new Exception("Nederīgs pasūtījuma ID!");
+        }
+
+        // Start transaction
+        $conn->begin_transaction();
+
+        try {
+            // Get order details to restore product quantity
+            $stmt = $conn->prepare("SELECT product_id, quantity FROM orders WHERE id = ?");
+            $stmt->bind_param("i", $order_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($result->num_rows === 0) {
+                throw new Exception("Pasūtījums nav atrasts!");
+            }
+
+            $order = $result->fetch_assoc();
+
+            // Restore product quantity if order was not cancelled
+            $stmt = $conn->prepare("SELECT status FROM orders WHERE id = ?");
+            $stmt->bind_param("i", $order_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $order_status = $result->fetch_assoc()['status'];
+
+            if ($order_status !== 'cancelled') {
+                $stmt = $conn->prepare("UPDATE products SET qty = qty + ? WHERE id = ?");
+                $stmt->bind_param("ii", $order['quantity'], $order['product_id']);
+                if (!$stmt->execute()) {
+                    throw new Exception("Kļūda atjauninot produkta daudzumu!");
+                }
+            }
+
+            // Delete the order
+            $stmt = $conn->prepare("DELETE FROM orders WHERE id = ?");
+            $stmt->bind_param("i", $order_id);
+            
+            if (!$stmt->execute()) {
+                throw new Exception("Kļūda dzēšot pasūtījumu!");
+            }
+
+            // If everything is successful, commit the transaction
+            $conn->commit();
+            echo json_encode(['success' => true]);
+        } catch (Exception $e) {
+            // If any error occurs, rollback the transaction
+            $conn->rollback();
+            throw $e;
+        }
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+    exit;
 }
 ?> 

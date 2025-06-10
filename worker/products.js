@@ -5,16 +5,32 @@ function loadProducts(){
 }
 function showProducts(data){
  let t=document.querySelector('table');
- t.innerHTML='<tr><th>Produkts</th><th>Kategorija</th><th>Cena</th><th>Firmas ID</th><th>Daudzums</th></tr>';
+ t.innerHTML='<tr><th>Produkts</th><th>Kategorija</th><th>Cena</th><th>Firmas ID</th><th>Daudzums</th><th>Darbības</th></tr>';
  data.forEach(row=>{
   let tr=document.createElement('tr');
-  tr.innerHTML=`<td>${row.name}</td><td>${row.category}</td><td>${row.price}</td><td>${row.firm}</td><td>${row.qty}</td>`;
+  tr.innerHTML=`<td>${row.name}</td><td>${row.category}</td><td>${row.price}</td><td>${row.firm}</td><td>${row.qty}</td><td><button class='delete' onclick='deleteProduct(${row.id})'>Dzēst</button> <button class='edit' onclick='editProduct(${row.id})'>Rediģēt</button></td>`;
   t.appendChild(tr);
  });
 }
 function deleteProduct(id){
- fetch('products.php',{method:'POST',body:new URLSearchParams({action:'delete',id})})
- .then(()=>loadProducts());
+ if (confirm('Vai tiešām vēlaties dzēst šo produktu?')) {
+  fetch('products.php', {
+   method: 'POST',
+   body: new URLSearchParams({ action: 'delete', id })
+  })
+  .then(response => response.json())
+  .then(data => {
+   if (data.success) {
+    loadProducts();
+   } else {
+    alert(data.error || 'Kļūda dzēšot produktu!');
+   }
+  })
+  .catch(error => {
+   console.error('Error:', error);
+   alert('Kļūda dzēšot produktu!');
+  });
+ }
 }
 function editProduct(id){
  fetch('products.php',{
@@ -43,17 +59,33 @@ function closeEditModal(){
 }
 function saveEditProduct(){
  let id=document.getElementById('edit-id').value;
- let name=document.getElementById('edit-name').value;
- let category=document.getElementById('edit-category').value;
+ let name=document.getElementById('edit-name').value.trim();
+ let category=document.getElementById('edit-category').value.trim();
  let price=document.getElementById('edit-price').value;
- let firm=document.getElementById('edit-firm').value;
+ let firm=document.getElementById('edit-firm').value.trim();
  let qty=document.getElementById('edit-qty').value;
+
+ // Validate inputs
+ if (!name || !category || !price || !firm || !qty) {
+  alert('Lūdzu aizpildiet visus laukus!');
+  return;
+ }
+
  fetch('products.php',{
   method:'POST',
   body:new URLSearchParams({action:'edit',id,name,category,price,firm,qty})
- }).then(()=>{
-  closeEditModal();
-  loadProducts();
+ }).then(response => response.json())
+ .then(data => {
+  if (data.success) {
+   closeEditModal();
+   loadProducts();
+  } else {
+   alert(data.error || 'Kļūda rediģējot produktu!');
+  }
+ })
+ .catch(error => {
+  console.error('Error:', error);
+  alert('Kļūda rediģējot produktu!');
  });
 }
 
@@ -330,5 +362,219 @@ function generateReport() {
     .catch(error => {
         console.error('Error:', error);
         alert('Kļūda atskaites ģenerēšanā: ' + error.message);
+    });
+}
+
+function showAddProductForm() {
+    document.getElementById('add-product-modal-overlay').style.display = 'flex';
+}
+
+function closeAddProductModal() {
+    document.getElementById('add-product-modal-overlay').style.display = 'none';
+    // Clear form fields
+    document.getElementById('add-name').value = '';
+    document.getElementById('add-category').value = '';
+    document.getElementById('add-price').value = '';
+    document.getElementById('add-firm').value = '';
+    document.getElementById('add-qty').value = '';
+}
+
+function submitAddProduct() {
+    const name = document.getElementById('add-name').value.trim();
+    const category = document.getElementById('add-category').value.trim();
+    const price = document.getElementById('add-price').value;
+    const firm = document.getElementById('add-firm').value.trim();
+    const qty = document.getElementById('add-qty').value;
+
+    // Validate inputs
+    if (!name || !category || !price || !firm || !qty) {
+        alert('Lūdzu aizpildiet visus laukus!');
+        return;
+    }
+
+    // Create form data
+    const formData = new FormData();
+    formData.append('action', 'add');
+    formData.append('name', name);
+    formData.append('category', category);
+    formData.append('price', price);
+    formData.append('firm', firm);
+    formData.append('qty', qty);
+
+    // Send request to add product
+    fetch('products.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Produkts veiksmīgi pievienots!');
+            closeAddProductModal();
+            loadProducts(); // Refresh the products list
+        } else {
+            alert(data.error || 'Kļūda pievienojot produktu!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Kļūda pievienojot produktu!');
+    });
+}
+
+function showManageOrders() {
+    document.getElementById('manage-orders-modal-overlay').style.display = 'flex';
+    loadOrders();
+}
+
+function closeManageOrdersModal() {
+    document.getElementById('manage-orders-modal-overlay').style.display = 'none';
+}
+
+function updateOrderDateToMin() {
+    const fromDate = document.getElementById('order-date-from').value;
+    if (fromDate) {
+        document.getElementById('order-date-to').min = fromDate;
+    }
+}
+
+function loadOrders() {
+    const dateFrom = document.getElementById('order-date-from').value;
+    const dateTo = document.getElementById('order-date-to').value;
+    const status = document.getElementById('order-status-filter').value;
+
+    const formData = new FormData();
+    formData.append('action', 'manage_orders');
+    if (dateFrom) formData.append('date_from', dateFrom);
+    if (dateTo) formData.append('date_to', dateTo);
+    if (status) formData.append('status', status);
+
+    fetch('products.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
+        displayOrders(data);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Kļūda ielādējot pasūtījumus!');
+    });
+}
+
+function displayOrders(orders) {
+    const table = document.getElementById('orders-table');
+    table.innerHTML = `
+        <tr>
+            <th>Datums</th>
+            <th>Produkts</th>
+            <th>Daudzums</th>
+            <th>Klients</th>
+            <th>Adrese</th>
+            <th>Statuss</th>
+            <th>Darbības</th>
+        </tr>
+    `;
+
+    orders.forEach(order => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${new Date(order.order_date).toLocaleString('lv-LV')}</td>
+            <td>${order.product_name}</td>
+            <td>${order.quantity}</td>
+            <td>${order.customer_name}</td>
+            <td>${order.delivery_address}</td>
+            <td>${getStatusText(order.status)}</td>
+            <td>
+                ${getActionButtons(order)}
+            </td>
+        `;
+        table.appendChild(tr);
+    });
+}
+
+function getStatusText(status) {
+    const statusMap = {
+        'pending': 'Gaida apstiprinājumu',
+        'confirmed': 'Apstiprināts',
+        'completed': 'Pabeigts',
+        'cancelled': 'Atcelts'
+    };
+    return statusMap[status] || status;
+}
+
+function getActionButtons(order) {
+    let buttons = '';
+    
+    if (order.status === 'pending') {
+        buttons += `<button onclick="updateOrderStatus(${order.id}, 'confirmed')" class="btn btn-success">Apstiprināt</button>`;
+        buttons += `<button onclick="updateOrderStatus(${order.id}, 'cancelled')" class="btn btn-danger">Atcelt</button>`;
+    } else if (order.status === 'confirmed') {
+        buttons += `<button onclick="updateOrderStatus(${order.id}, 'completed')" class="btn btn-success">Pabeigt</button>`;
+        buttons += `<button onclick="updateOrderStatus(${order.id}, 'cancelled')" class="btn btn-danger">Atcelt</button>`;
+    } else if (order.status === 'cancelled') {
+        buttons += `<button onclick="deleteOrder(${order.id})" class="btn btn-danger">Dzēst</button>`;
+    }
+    
+    return buttons;
+}
+
+function deleteOrder(orderId) {
+    if (!confirm('Vai tiešām vēlaties dzēst šo pasūtījumu? Šo darbību nevar atsaukt.')) {
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('action', 'delete_order');
+    formData.append('order_id', orderId);
+
+    fetch('products.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadOrders(); // Refresh the orders list
+        } else {
+            alert(data.error || 'Kļūda dzēšot pasūtījumu!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Kļūda dzēšot pasūtījumu!');
+    });
+}
+
+function updateOrderStatus(orderId, newStatus) {
+    if (!confirm('Vai tiešām vēlaties mainīt pasūtījuma statusu?')) {
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append('action', 'update_order_status');
+    formData.append('order_id', orderId);
+    formData.append('status', newStatus);
+
+    fetch('products.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadOrders(); // Refresh the orders list
+        } else {
+            alert(data.error || 'Kļūda atjauninot pasūtījuma statusu!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Kļūda atjauninot pasūtījuma statusu!');
     });
 } 
