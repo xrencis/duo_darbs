@@ -18,8 +18,8 @@ require_once '../check_session.php';
         <div class="logo"> <span class="icon">🏠</span> <span>STASH</span> </div>
         <ul>
             <li><span class="icon">🏠</span> Sākums</li>
-            <li><span class="icon">🚚</span> Veikt pasūtījumu</li>
-            <li><span class="icon">📄</span> Izveidot atskaiti</li>
+            <li><span class="icon">🚚</span> <a href="#" onclick="showOrderForm(); return false;" style="text-decoration: none; color: inherit;">Veikt pasūtījumu</a></li>
+            <li><span class="icon">📄</span> <a href="#" onclick="showReport(); return false;" style="text-decoration: none; color: inherit;">Izveidot atskaiti</a></li>
             <li><span class="icon">↩️</span> <a href="../logout.php" style="text-decoration: none; color: inherit;">Iziet</a></li>
         </ul>
     </div>
@@ -66,6 +66,68 @@ require_once '../check_session.php';
             </tr>
         </table>
     </div>
+
+    <!-- Order Form Modal -->
+    <div class="modal-overlay" id="order-modal-overlay">
+        <div class="modal-box" id="order-modal">
+            <h2>Veikt pasūtījumu</h2>
+            <div class="form-group">
+                <label for="order-product">Izvēlieties produktu</label>
+                <select id="order-product" required>
+                    <option value="">Izvēlieties produktu...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="order-quantity">Daudzums</label>
+                <input type="number" id="order-quantity" min="1" required>
+            </div>
+            <div class="form-group">
+                <label for="order-customer">Klienta vārds</label>
+                <input type="text" id="order-customer" required>
+            </div>
+            <div class="form-group">
+                <label for="order-address">Piegādes adrese</label>
+                <input type="text" id="order-address" required>
+            </div>
+            <div class="modal-btns">
+                <button onclick="submitOrder()">Pasūtīt</button>
+                <button onclick="closeOrderModal()">Aizvērt</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div class="modal-overlay" id="report-modal-overlay">
+        <div class="modal-box" id="report-modal">
+            <h2>Pasūtījumu atskaite</h2>
+            <div class="report-filters">
+                <div class="form-group">
+                    <label for="report-date-from">No datuma:</label>
+                    <input type="date" id="report-date-from">
+                </div>
+                <div class="form-group">
+                    <label for="report-date-to">Līdz datumam:</label>
+                    <input type="date" id="report-date-to">
+                </div>
+                <button onclick="generateReport()">Ģenerēt atskaiti</button>
+            </div>
+            <div class="report-content">
+                <table id="report-table">
+                    <tr>
+                        <th>Datums</th>
+                        <th>Produkts</th>
+                        <th>Daudzums</th>
+                        <th>Klients</th>
+                        <th>Adrese</th>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-btns">
+                <button onclick="closeReportModal()">Aizvērt</button>
+            </div>
+        </div>
+    </div>
+
     <script src="products.js"></script>
 </body>
 </html> 

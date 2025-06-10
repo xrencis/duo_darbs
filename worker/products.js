@@ -55,4 +55,131 @@ function saveEditProduct(){
   closeEditModal();
   loadProducts();
  });
+}
+
+function showOrderForm() {
+    // Load products into the select dropdown
+    fetch('products.php', {
+        method: 'POST',
+        body: new URLSearchParams({action: 'fetch'})
+    })
+    .then(r => r.json())
+    .then(data => {
+        const select = document.getElementById('order-product');
+        select.innerHTML = '<option value="">Izvēlieties produktu...</option>';
+        data.forEach(product => {
+            if (product.qty > 0) { // Only show products that are in stock
+                const option = document.createElement('option');
+                option.value = product.id;
+                option.textContent = `${product.name} (Pieejams: ${product.qty})`;
+                select.appendChild(option);
+            }
+        });
+        document.getElementById('order-modal-overlay').classList.add('active');
+    })
+    .catch(error => {
+        console.error('Error loading products:', error);
+        alert('Kļūda produktu saraksta ielādēšanā!');
+    });
+}
+
+function closeOrderModal() {
+    document.getElementById('order-modal-overlay').classList.remove('active');
+    // Clear form fields
+    document.getElementById('order-product').value = '';
+    document.getElementById('order-quantity').value = '';
+    document.getElementById('order-customer').value = '';
+    document.getElementById('order-address').value = '';
+}
+
+function submitOrder() {
+    const productId = document.getElementById('order-product').value;
+    const quantity = document.getElementById('order-quantity').value;
+    const customer = document.getElementById('order-customer').value;
+    const address = document.getElementById('order-address').value;
+
+    if (!productId || !quantity || !customer || !address) {
+        alert('Lūdzu aizpildiet visus laukus!');
+        return;
+    }
+
+    fetch('products.php', {
+        method: 'POST',
+        body: new URLSearchParams({
+            action: 'order',
+            id: productId,
+            quantity: quantity,
+            customer: customer,
+            address: address
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            alert('Pasūtījums veiksmīgi izpildīts!');
+            closeOrderModal();
+            // Update the product list immediately
+            loadProducts();
+        } else {
+            alert(data.message || 'Kļūda pasūtījuma izpildē!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Kļūda pasūtījuma izpildē!');
+    });
+}
+
+function showReport() {
+    // Set default date range (last 30 days)
+    const today = new Date();
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(today.getDate() - 30);
+    
+    document.getElementById('report-date-from').value = thirtyDaysAgo.toISOString().split('T')[0];
+    document.getElementById('report-date-to').value = today.toISOString().split('T')[0];
+    
+    document.getElementById('report-modal-overlay').classList.add('active');
+    generateReport(); // Generate initial report
+}
+
+function closeReportModal() {
+    document.getElementById('report-modal-overlay').classList.remove('active');
+}
+
+function generateReport() {
+    const dateFrom = document.getElementById('report-date-from').value;
+    const dateTo = document.getElementById('report-date-to').value;
+
+    fetch('products.php', {
+        method: 'POST',
+        body: new URLSearchParams({
+            action: 'report',
+            date_from: dateFrom,
+            date_to: dateTo
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+        const table = document.getElementById('report-table');
+        // Keep the header row
+        table.innerHTML = '<tr><th>Datums</th><th>Produkts</th><th>Daudzums</th><th>Klients</th><th>Adrese</th></tr>';
+        
+        data.forEach(order => {
+            const row = document.createElement('tr');
+            const orderDate = new Date(order.order_date).toLocaleString('lv-LV');
+            row.innerHTML = `
+                <td>${orderDate}</td>
+                <td>${order.product_name}</td>
+                <td>${order.quantity}</td>
+                <td>${order.customer_name}</td>
+                <td>${order.delivery_address}</td>
+            `;
+            table.appendChild(row);
+        });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Kļūda atskaites ģenerēšanā!');
+    });
 } 
