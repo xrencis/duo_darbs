@@ -25,36 +25,6 @@ require_once '../check_session.php';
     </div>
     <div class="main">
         <h1>Produkti</h1>
-        <div class="modal-overlay" id="edit-modal-overlay">
-            <div class="modal-box" id="edit-modal">
-                <h2>Rediģēt produktu</h2>
-                <input type="hidden" id="edit-id">
-                <div class="form-group">
-                    <label id="edit-name-label">Nosaukums</label>
-                    <input type="text" id="edit-name" placeholder="Nosaukums">
-                </div>
-                <div class="form-group">
-                    <label id="edit-category-label">Kategorija</label>
-                    <input type="text" id="edit-category" placeholder="Kategorija">
-                </div>
-                <div class="form-group">
-                    <label id="edit-price-label">Cena</label>
-                    <input type="number" id="edit-price" placeholder="Cena">
-                </div>
-                <div class="form-group">
-                    <label id="edit-firm-label">Firmas ID</label>
-                    <input type="text" id="edit-firm" placeholder="Firmas ID">
-                </div>
-                <div class="form-group">
-                    <label id="edit-qty-label">Daudzums</label>
-                    <input type="number" id="edit-qty" placeholder="Daudzums">
-                </div>
-                <div class="modal-btns">
-                    <button onclick="saveEditProduct()">Saglabāt</button>
-                    <button onclick="closeEditModal()">Aizvērt</button>
-                </div>
-            </div>
-        </div>
         <table>
             <tr>
                 <th>Produkts</th>
@@ -62,7 +32,6 @@ require_once '../check_session.php';
                 <th>Cena</th>
                 <th>Firmas ID</th>
                 <th>Daudzums</th>
-                <th>Darbības</th>
             </tr>
         </table>
     </div>
@@ -107,16 +76,16 @@ require_once '../check_session.php';
     <div class="modal-overlay" id="report-modal-overlay">
         <div class="modal-box" id="report-modal">
             <h2>Pasūtījumu atskaite</h2>
-            <div class="report-filters">
-                <div class="form-group">
+            <div class="report-filters" style="text-align: center; margin-bottom: 20px;">
+                <div class="form-group" style="margin-bottom: 15px;">
                     <label for="report-date-from">No datuma:</label>
-                    <input type="date" id="report-date-from">
+                    <input type="date" id="report-date-from" onchange="updateDateToMin()">
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 15px;">
                     <label for="report-date-to">Līdz datumam:</label>
                     <input type="date" id="report-date-to">
                 </div>
-                <button onclick="generateReport()">Ģenerēt atskaiti</button>
+                <button onclick="generateReport()" style="margin-top: 10px;">Ģenerēt atskaiti</button>
             </div>
             <div class="report-content">
                 <table id="report-table">

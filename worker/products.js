@@ -5,10 +5,10 @@ function loadProducts(){
 }
 function showProducts(data){
  let t=document.querySelector('table');
- t.innerHTML='<tr><th>Produkts</th><th>Kategorija</th><th>Cena</th><th>Firmas ID</th><th>Daudzums</th><th>Darbības</th></tr>';
+ t.innerHTML='<tr><th>Produkts</th><th>Kategorija</th><th>Cena</th><th>Firmas ID</th><th>Daudzums</th></tr>';
  data.forEach(row=>{
   let tr=document.createElement('tr');
-  tr.innerHTML=`<td>${row.name}</td><td>${row.category}</td><td>${row.price}</td><td>${row.firm}</td><td>${row.qty}</td><td><button class='delete' onclick='deleteProduct(${row.id})'>Dzēst</button> <button class='edit' onclick='editProduct(${row.id})'>Rediģēt</button></td>`;
+  tr.innerHTML=`<td>${row.name}</td><td>${row.category}</td><td>${row.price}</td><td>${row.firm}</td><td>${row.qty}</td>`;
   t.appendChild(tr);
  });
 }
@@ -226,14 +226,32 @@ function submitOrder() {
     });
 }
 
-function showReport() {
-    // Set default date range (last 30 days)
-    const today = new Date();
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(today.getDate() - 30);
+function updateDateToMin() {
+    const dateFrom = document.getElementById('report-date-from').value;
+    const dateTo = document.getElementById('report-date-to');
     
-    document.getElementById('report-date-from').value = thirtyDaysAgo.toISOString().split('T')[0];
-    document.getElementById('report-date-to').value = today.toISOString().split('T')[0];
+    // Set minimum date for "to" date
+    dateTo.min = dateFrom;
+    
+    // If current "to" date is before "from" date, update it
+    if (dateTo.value && dateTo.value < dateFrom) {
+        dateTo.value = dateFrom;
+    }
+}
+
+function showReport() {
+    // Set default date range (last 30 days to tomorrow)
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(tomorrow.getDate() - 30);
+    
+    const dateFrom = thirtyDaysAgo.toISOString().split('T')[0];
+    const dateTo = tomorrow.toISOString().split('T')[0];
+    
+    document.getElementById('report-date-from').value = dateFrom;
+    document.getElementById('report-date-to').value = dateTo;
+    document.getElementById('report-date-to').min = dateFrom;
     
     document.getElementById('report-modal-overlay').classList.add('active');
     generateReport(); // Generate initial report
@@ -246,6 +264,12 @@ function closeReportModal() {
 function generateReport() {
     const dateFrom = document.getElementById('report-date-from').value;
     const dateTo = document.getElementById('report-date-to').value;
+
+    // Validate dates
+    if (dateTo < dateFrom) {
+        alert('"Līdz datumam" nevar būt pirms "No datuma"!');
+        return;
+    }
 
     fetch('products.php', {
         method: 'POST',
