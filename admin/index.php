@@ -21,6 +21,7 @@ require_once '../check_session.php';
             <li><span class="icon">➕</span> <span id="show-add-form">Pievienot produktu</span></li>
             <li><span class="icon">➕</span> <span id="show-add-user">Pievienot lietotāju</span></li>
             <li><span class="icon">👤</span> <span id="show-users">Lietotāji</span></li>
+            <li><span class="icon">📋</span> <a href="#" onclick="showManageOrders(); return false;" style="text-decoration: none; color: inherit;">Pārvaldīt pasūtījumus</a></li>
             <li><span class="icon">↩️</span> <a href="../logout.php" style="text-decoration: none; color: inherit;">Iziet</a></li>
         </ul>
     </div>
@@ -139,7 +140,53 @@ require_once '../check_session.php';
             </tr>
         </table>
     </div>
+
+    <!-- Manage Orders Modal -->
+    <div class="modal-overlay" id="manage-orders-modal-overlay">
+        <div class="modal-box" id="manage-orders-modal" style="max-height: 90vh; overflow-y: auto;">
+            <h2>Pārvaldīt pasūtījumus</h2>
+            <div class="order-filters" style="text-align: center; margin-bottom: 20px; position: sticky; top: 0; background: white; padding: 10px 0;">
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="order-date-from">No datuma:</label>
+                    <input type="date" id="order-date-from" onchange="updateOrderDateToMin()">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="order-date-to">Līdz datumam:</label>
+                    <input type="date" id="order-date-to">
+                </div>
+                <div class="form-group" style="margin-bottom: 15px;">
+                    <label for="order-status-filter">Statuss:</label>
+                    <select id="order-status-filter">
+                        <option value="">Visi</option>
+                        <option value="pending">Gaida apstiprinājumu</option>
+                        <option value="confirmed">Apstiprināts</option>
+                        <option value="completed">Pabeigts</option>
+                        <option value="cancelled">Atcelts</option>
+                    </select>
+                </div>
+                <button onclick="loadOrders()" style="margin-top: 10px;">Filtrēt</button>
+            </div>
+            <div class="orders-content">
+                <table id="orders-table">
+                    <tr>
+                        <th>Datums</th>
+                        <th>Produkts</th>
+                        <th>Daudzums</th>
+                        <th>Klients</th>
+                        <th>Adrese</th>
+                        <th>Statuss</th>
+                        <th>Darbības</th>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-btns" style="position: sticky; bottom: 0; background: white; padding: 10px 0;">
+                <button onclick="closeManageOrdersModal()">Aizvērt</button>
+            </div>
+        </div>
+    </div>
+
     <script src="products.js"></script>
+    <script src="orders.js"></script>
 
     <!-- User List Modal -->
     <div id="user-list-modal-overlay" class="modal-overlay">
