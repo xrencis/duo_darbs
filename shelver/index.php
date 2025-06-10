@@ -19,7 +19,7 @@ require_once '../check_session.php';
         <ul>
             <li><span class="icon">🏠</span> Sākums</li>
             <li><span class="icon">📦</span> Izvietot preces</li>
-            <li><span class="icon">📄</span> Sagatavot atskaiti</li>
+            <li><span class="icon">📋</span> <a href="#" onclick="showReport(); return false;" style="text-decoration: none; color: inherit;">Sagatavot atskaiti</a></li>
             <li><span class="icon">📝</span> Datu ievade</li>
             <li><span class="icon">↩️</span> <a href="../logout.php" style="text-decoration: none; color: inherit;">Iziet</a></li>
         </ul>
@@ -66,6 +66,52 @@ require_once '../check_session.php';
                 <th>Darbības</th>
             </tr>
         </table>
+    </div>
+    <div id="report-modal-overlay" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Sagatavot atskaiti</h2>
+                <button onclick="closeReportModal()" class="close-button">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="filter-section">
+                    <div class="date-filters">
+                        <div class="filter-group">
+                            <label for="report-date-from">No datuma:</label>
+                            <input type="date" id="report-date-from" onchange="updateDateToMin()">
+                        </div>
+                        <div class="filter-group">
+                            <label for="report-date-to">Līdz datumam:</label>
+                            <input type="date" id="report-date-to">
+                        </div>
+                    </div>
+                    <button onclick="generateReport()" class="action-button">Ģenerēt atskaiti</button>
+                </div>
+                <div class="table-container">
+                    <table id="report-table">
+                        <thead>
+                            <tr>
+                                <th>Datums</th>
+                                <th>Prece</th>
+                                <th>Daudzums</th>
+                                <th>Cena</th>
+                                <th>Kopā</th>
+                                <th>Klients</th>
+                                <th>Piegādes adrese</th>
+                            </tr>
+                        </thead>
+                        <tbody id="report-body">
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" style="text-align: right;"><strong>Kopā:</strong></td>
+                                <td colspan="3" id="report-total">0.00 €</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="products.js"></script>
 </body>
