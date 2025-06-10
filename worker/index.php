@@ -67,9 +67,9 @@ require_once '../check_session.php';
 
     <!-- Report Modal -->
     <div class="modal-overlay" id="report-modal-overlay">
-        <div class="modal-box" id="report-modal">
+        <div class="modal-box" id="report-modal" style="max-height: 90vh; overflow-y: auto;">
             <h2>Pasūtījumu atskaite</h2>
-            <div class="report-filters" style="text-align: center; margin-bottom: 20px;">
+            <div class="report-filters" style="text-align: center; margin-bottom: 20px; position: sticky; top: 0; background: white; padding: 10px 0;">
                 <div class="form-group" style="margin-bottom: 15px;">
                     <label for="report-date-from">No datuma:</label>
                     <input type="date" id="report-date-from" onchange="updateDateToMin()">
@@ -86,12 +86,14 @@ require_once '../check_session.php';
                         <th>Datums</th>
                         <th>Produkts</th>
                         <th>Daudzums</th>
+                        <th>Cena</th>
+                        <th>Kopā</th>
                         <th>Klients</th>
                         <th>Adrese</th>
                     </tr>
                 </table>
             </div>
-            <div class="modal-btns">
+            <div class="modal-btns" style="position: sticky; bottom: 0; background: white; padding: 10px 0;">
                 <button onclick="closeReportModal()">Aizvērt</button>
             </div>
         </div>

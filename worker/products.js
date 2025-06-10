@@ -185,25 +185,54 @@ function generateReport() {
     })
     .then(r => r.json())
     .then(data => {
+        if (data.error) {
+            throw new Error(data.message);
+        }
+
         const table = document.getElementById('report-table');
         // Keep the header row
-        table.innerHTML = '<tr><th>Datums</th><th>Produkts</th><th>Daudzums</th><th>Klients</th><th>Adrese</th></tr>';
+        table.innerHTML = '<tr><th>Datums</th><th>Produkts</th><th>Daudzums</th><th>Cena</th><th>Kopā</th><th>Klients</th><th>Adrese</th></tr>';
         
+        if (data.length === 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = '<td colspan="7" style="text-align: center;">Nav atrasts neviens pasūtījums šajā periodā</td>';
+            table.appendChild(row);
+            return;
+        }
+
+        let totalSum = 0;
         data.forEach(order => {
             const row = document.createElement('tr');
             const orderDate = new Date(order.order_date).toLocaleString('lv-LV');
+            const price = parseFloat(order.price);
+            const quantity = parseInt(order.quantity);
+            const totalCost = (price * quantity).toFixed(2);
+            totalSum += parseFloat(totalCost);
+            
             row.innerHTML = `
                 <td>${orderDate}</td>
                 <td>${order.product_name}</td>
-                <td>${order.quantity}</td>
+                <td>${quantity}</td>
+                <td>${price.toFixed(2)} €</td>
+                <td>${totalCost} €</td>
                 <td>${order.customer_name}</td>
                 <td>${order.delivery_address}</td>
             `;
             table.appendChild(row);
         });
+
+        // Add total sum row
+        const totalRow = document.createElement('tr');
+        totalRow.style.fontWeight = 'bold';
+        totalRow.innerHTML = `
+            <td colspan="4" style="text-align: right;">Kopējā summa:</td>
+            <td>${totalSum.toFixed(2)} €</td>
+            <td colspan="2"></td>
+        `;
+        table.appendChild(totalRow);
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Kļūda atskaites ģenerēšanā!');
+        alert('Kļūda atskaites ģenerēšanā: ' + error.message);
     });
 } 

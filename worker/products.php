@@ -73,26 +73,42 @@ if ($action === 'order') {
 }
 
 if ($action === 'report') {
-    $date_from = $conn->real_escape_string($_POST['date_from']);
-    $date_to = $conn->real_escape_string($_POST['date_to']);
+    try {
+        $date_from = $conn->real_escape_string($_POST['date_from']);
+        $date_to = $conn->real_escape_string($_POST['date_to']);
 
-    $query = "SELECT o.*, p.name as product_name 
-              FROM orders o 
-              JOIN products p ON o.product_id = p.id 
-              WHERE o.order_date BETWEEN ? AND ? 
-              ORDER BY o.order_date DESC";
-    
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("ss", $date_from, $date_to);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    $data = [];
-    while ($row = $result->fetch_assoc()) {
-        $data[] = $row;
+        $query = "SELECT o.*, p.name as product_name, p.price, 
+                  (o.quantity * p.price) as total_cost
+                  FROM orders o 
+                  JOIN products p ON o.product_id = p.id 
+                  WHERE o.order_date BETWEEN ? AND ? 
+                  ORDER BY o.order_date DESC";
+        
+        $stmt = $conn->prepare($query);
+        if (!$stmt) {
+            throw new Exception("Query preparation failed: " . $conn->error);
+        }
+
+        $stmt->bind_param("ss", $date_from, $date_to);
+        if (!$stmt->execute()) {
+            throw new Exception("Query execution failed: " . $stmt->error);
+        }
+
+        $result = $stmt->get_result();
+        if (!$result) {
+            throw new Exception("Failed to get result: " . $stmt->error);
+        }
+        
+        $data = [];
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+        
+        echo json_encode($data);
+    } catch (Exception $e) {
+        error_log("Report generation error: " . $e->getMessage());
+        echo json_encode(['error' => true, 'message' => $e->getMessage()]);
     }
-    
-    echo json_encode($data);
     exit();
 }
 ?> 
