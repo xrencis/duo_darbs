@@ -38,15 +38,46 @@ if ($action === 'order') {
     $customer = $conn->real_escape_string($_POST['customer']);
     $address = $conn->real_escape_string($_POST['address']);
 
+    // Validate input
+    $errors = [];
+
+    // Product ID validation
+    if (empty($id)) {
+        $errors[] = 'Produkts nav izvēlēts';
+    }
+
+    // Quantity validation
+    if ($quantity <= 0) {
+        $errors[] = 'Daudzumam jābūt lielākam par 0';
+    }
+
+    // Customer name validation
+    if (empty($customer)) {
+        $errors[] = 'Klienta vārds nevar būt tukšs';
+    } elseif (strlen($customer) < 2 || strlen($customer) > 100) {
+        $errors[] = 'Klienta vārdam jābūt no 2 līdz 100 rakstzīmēm';
+    } elseif (preg_match('/^\d+$/', $customer)) {
+        $errors[] = 'Klienta vārds nevar sastāvēt tikai no cipariem';
+    }
+
+    // Address validation
+    if (empty($address)) {
+        $errors[] = 'Piegādes adrese nevar būt tukša';
+    } elseif (strlen($address) < 5 || strlen($address) > 500) {
+        $errors[] = 'Piegādes adresei jābūt no 5 līdz 500 rakstzīmēm';
+    } elseif (preg_match('/^\d+$/', $address)) {
+        $errors[] = 'Piegādes adrese nevar sastāvēt tikai no cipariem';
+    }
+
+    if (!empty($errors)) {
+        echo json_encode(['success' => false, 'message' => implode(', ', $errors)]);
+        exit();
+    }
+
     // Start transaction
     $conn->begin_transaction();
 
     try {
-        // Validate input
-        if ($quantity <= 0) {
-            throw new Exception('Daudzumam jābūt lielākam par 0');
-        }
-
         // Check if product exists and has enough quantity
         $query = "SELECT qty FROM products WHERE id = ? FOR UPDATE";
         $stmt = $conn->prepare($query);

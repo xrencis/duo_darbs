@@ -79,15 +79,22 @@ require_once '../check_session.php';
             </div>
             <div class="form-group">
                 <label for="order-quantity">Daudzums</label>
-                <input type="number" id="order-quantity" min="1" required>
+                <input type="number" id="order-quantity" min="1" required
+                       title="Daudzumam jābūt lielākam par 0">
             </div>
             <div class="form-group">
                 <label for="order-customer">Klienta vārds</label>
-                <input type="text" id="order-customer" required>
+                <input type="text" id="order-customer" required
+                       minlength="2" maxlength="100"
+                       pattern="^(?![\s0]+$).+"
+                       title="Klienta vārdam jābūt no 2 līdz 100 rakstzīmēm">
             </div>
             <div class="form-group">
                 <label for="order-address">Piegādes adrese</label>
-                <input type="text" id="order-address" required>
+                <input type="text" id="order-address" required
+                       minlength="5" maxlength="500"
+                       pattern="^(?![\s0]+$).+"
+                       title="Piegādes adresei jābūt no 5 līdz 500 rakstzīmēm">
             </div>
             <div class="modal-btns">
                 <button onclick="submitOrder()">Pasūtīt</button>

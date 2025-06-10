@@ -92,16 +92,86 @@ function closeOrderModal() {
     document.getElementById('order-address').value = '';
 }
 
-function submitOrder() {
+function validateOrder() {
     const productId = document.getElementById('order-product').value;
-    const quantity = document.getElementById('order-quantity').value;
-    const customer = document.getElementById('order-customer').value;
-    const address = document.getElementById('order-address').value;
+    const quantity = parseInt(document.getElementById('order-quantity').value);
+    const customer = document.getElementById('order-customer').value.trim();
+    const address = document.getElementById('order-address').value.trim();
+    const errorMessage = document.createElement('div');
+    errorMessage.style.color = 'red';
+    errorMessage.style.marginTop = '10px';
+    errorMessage.style.textAlign = 'center';
 
-    if (!productId || !quantity || !customer || !address) {
-        alert('Lūdzu aizpildiet visus laukus!');
+    // Remove any existing error message
+    const existingError = document.querySelector('#order-modal div[style*="color: red"]');
+    if (existingError) {
+        existingError.remove();
+    }
+
+    // Product validation
+    if (!productId) {
+        errorMessage.textContent = 'Lūdzu izvēlieties produktu';
+        document.getElementById('order-modal').appendChild(errorMessage);
+        return false;
+    }
+
+    // Quantity validation
+    if (isNaN(quantity) || quantity <= 0) {
+        errorMessage.textContent = 'Daudzumam jābūt lielākam par 0';
+        document.getElementById('order-modal').appendChild(errorMessage);
+        return false;
+    }
+
+    // Customer name validation
+    if (!customer) {
+        errorMessage.textContent = 'Klienta vārds nevar būt tukšs';
+        document.getElementById('order-modal').appendChild(errorMessage);
+        return false;
+    }
+
+    if (customer.length < 2 || customer.length > 100) {
+        errorMessage.textContent = 'Klienta vārdam jābūt no 2 līdz 100 rakstzīmēm';
+        document.getElementById('order-modal').appendChild(errorMessage);
+        return false;
+    }
+
+    if (/^\d+$/.test(customer)) {
+        errorMessage.textContent = 'Klienta vārds nevar sastāvēt tikai no cipariem';
+        document.getElementById('order-modal').appendChild(errorMessage);
+        return false;
+    }
+
+    // Address validation
+    if (!address) {
+        errorMessage.textContent = 'Piegādes adrese nevar būt tukša';
+        document.getElementById('order-modal').appendChild(errorMessage);
+        return false;
+    }
+
+    if (address.length < 5 || address.length > 500) {
+        errorMessage.textContent = 'Piegādes adresei jābūt no 5 līdz 500 rakstzīmēm';
+        document.getElementById('order-modal').appendChild(errorMessage);
+        return false;
+    }
+
+    if (/^\d+$/.test(address)) {
+        errorMessage.textContent = 'Piegādes adrese nevar sastāvēt tikai no cipariem';
+        document.getElementById('order-modal').appendChild(errorMessage);
+        return false;
+    }
+
+    return true;
+}
+
+function submitOrder() {
+    if (!validateOrder()) {
         return;
     }
+
+    const productId = document.getElementById('order-product').value;
+    const quantity = document.getElementById('order-quantity').value;
+    const customer = document.getElementById('order-customer').value.trim();
+    const address = document.getElementById('order-address').value.trim();
 
     fetch('products.php', {
         method: 'POST',
@@ -116,17 +186,43 @@ function submitOrder() {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            alert('Pasūtījums veiksmīgi izpildīts!');
-            closeOrderModal();
+            const successMessage = document.createElement('div');
+            successMessage.style.color = 'green';
+            successMessage.style.marginTop = '10px';
+            successMessage.style.textAlign = 'center';
+            successMessage.textContent = 'Pasūtījums veiksmīgi izpildīts!';
+            document.getElementById('order-modal').appendChild(successMessage);
+            
+            // Clear form fields after successful order
+            document.getElementById('order-product').value = '';
+            document.getElementById('order-quantity').value = '';
+            document.getElementById('order-customer').value = '';
+            document.getElementById('order-address').value = '';
+            
+            // Optionally, close modal after a short delay or allow user to close it
+            setTimeout(() => {
+                closeOrderModal();
+            }, 2000); // Close after 2 seconds
+
             // Update the product list immediately
             loadProducts();
         } else {
-            alert(data.message || 'Kļūda pasūtījuma izpildē!');
+            const errorMessage = document.createElement('div');
+            errorMessage.style.color = 'red';
+            errorMessage.style.marginTop = '10px';
+            errorMessage.style.textAlign = 'center';
+            errorMessage.textContent = data.message || 'Kļūda pasūtījuma izpildē!';
+            document.getElementById('order-modal').appendChild(errorMessage);
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Kļūda pasūtījuma izpildē!');
+        const errorMessage = document.createElement('div');
+        errorMessage.style.color = 'red';
+        errorMessage.style.marginTop = '10px';
+        errorMessage.style.textAlign = 'center';
+        errorMessage.textContent = 'Kļūda pasūtījuma izpildē!';
+        document.getElementById('order-modal').appendChild(errorMessage);
     });
 }
 
