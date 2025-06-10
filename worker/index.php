@@ -100,16 +100,16 @@ require_once '../check_session.php';
     <div class="modal-overlay" id="report-modal-overlay">
         <div class="modal-box" id="report-modal">
             <h2>Pasūtījumu atskaite</h2>
-            <div class="report-filters">
-                <div class="form-group">
+            <div class="report-filters" style="text-align: center; margin-bottom: 20px;">
+                <div class="form-group" style="margin-bottom: 15px;">
                     <label for="report-date-from">No datuma:</label>
-                    <input type="date" id="report-date-from">
+                    <input type="date" id="report-date-from" onchange="updateDateToMin()">
                 </div>
-                <div class="form-group">
+                <div class="form-group" style="margin-bottom: 15px;">
                     <label for="report-date-to">Līdz datumam:</label>
                     <input type="date" id="report-date-to">
                 </div>
-                <button onclick="generateReport()">Ģenerēt atskaiti</button>
+                <button onclick="generateReport()" style="margin-top: 10px;">Ģenerēt atskaiti</button>
             </div>
             <div class="report-content">
                 <table id="report-table">
