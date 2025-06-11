@@ -392,6 +392,9 @@ function loadUsers() {
                         const userDiv = document.createElement('div');
                         userDiv.className = 'user-list-item';
                         
+                        const userInfoDiv = document.createElement('div');
+                        userInfoDiv.className = 'user-info';
+                        
                         const usernameSpan = document.createElement('span');
                         usernameSpan.textContent = user.username;
                         
@@ -399,8 +402,21 @@ function loadUsers() {
                         roleSpan.className = `user-role role-${user.role}`;
                         roleSpan.textContent = user.role;
                         
-                        userDiv.appendChild(usernameSpan);
-                        userDiv.appendChild(roleSpan);
+                        userInfoDiv.appendChild(usernameSpan);
+                        userInfoDiv.appendChild(roleSpan);
+                        
+                        const actionsDiv = document.createElement('div');
+                        actionsDiv.className = 'user-actions';
+                        
+                        const editButton = document.createElement('button');
+                        editButton.className = 'edit';
+                        editButton.textContent = 'Rediģēt';
+                        editButton.onclick = () => showEditUserModal(user);
+                        
+                        actionsDiv.appendChild(editButton);
+                        
+                        userDiv.appendChild(userInfoDiv);
+                        userDiv.appendChild(actionsDiv);
                         container.appendChild(userDiv);
                     });
                 } else {
@@ -416,4 +432,92 @@ function loadUsers() {
             const container = document.getElementById('user-list-container');
             container.innerHTML = `<div class="user-list-item">Kļūda: ${error.message}</div>`;
         });
+}
+
+function showEditUserModal(user) {
+    // Create modal HTML
+    const modalHTML = `
+        <div class="modal-overlay" id="edit-user-modal-overlay">
+            <div class="modal-box">
+                <h2>Rediģēt lietotāju</h2>
+                <div class="form-group">
+                    <label>Lietotājvārds</label>
+                    <input type="text" id="edit-username" value="${user.username}" readonly>
+                </div>
+                <div class="form-group">
+                    <label>Lietotāja tips</label>
+                    <select id="edit-role">
+                        <option value="worker" ${user.role === 'worker' ? 'selected' : ''}>Noliktavas darbinieks</option>
+                        <option value="shelver" ${user.role === 'shelver' ? 'selected' : ''}>Plauktu kārtotājs</option>
+                        <option value="admin" ${user.role === 'admin' ? 'selected' : ''}>Administrators</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Jauna parole (atstājiet tukšu, lai nemainītu)</label>
+                    <input type="password" id="edit-password" placeholder="Jauna parole">
+                </div>
+                <div class="modal-btns">
+                    <button id="save-user-btn">Saglabāt</button>
+                    <button id="cancel-edit-btn">Atcelt</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Remove any existing modal
+    const existingModal = document.getElementById('edit-user-modal-overlay');
+    if (existingModal) {
+        existingModal.remove();
+    }
+
+    // Add new modal to the page
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+    // Get modal elements
+    const modal = document.getElementById('edit-user-modal-overlay');
+    const saveBtn = document.getElementById('save-user-btn');
+    const cancelBtn = document.getElementById('cancel-edit-btn');
+
+    // Add event listeners
+    saveBtn.addEventListener('click', () => {
+        const newRole = document.getElementById('edit-role').value;
+        const newPassword = document.getElementById('edit-password').value;
+        
+        const data = {
+            username: user.username,
+            role: newRole,
+            password: newPassword
+        };
+        
+        fetch('update_user.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Lietotājs veiksmīgi atjaunināts');
+                modal.remove();
+                loadUsers(); // Reload the user list
+            } else {
+                alert(data.message || 'Kļūda atjauninot lietotāju');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Kļūda atjauninot lietotāju');
+        });
+    });
+
+    cancelBtn.addEventListener('click', () => {
+        modal.remove();
+    });
+
+    // Show modal
+    requestAnimationFrame(() => {
+        modal.classList.add('active');
+    });
 } 
