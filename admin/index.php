@@ -21,7 +21,7 @@ require_once '../check_session.php';
             <li><span class="icon">➕</span> <span id="show-add-form">Pievienot produktu</span></li>
             <li><span class="icon">➕</span> <span id="show-add-user">Pievienot lietotāju</span></li>
             <li><span class="icon">👤</span> <span id="show-users">Lietotāji</span></li>
-            <li><span class="icon">📋</span> <a href="#" onclick="showManageOrders(); return false;" style="text-decoration: none; color: inherit;">Pārvaldīt pasūtījumus</a></li>
+            <!--<li><span class="icon">📋</span> <a href="#" onclick="showManageOrders(); return false;" style="text-decoration: none; color: inherit;">Pārvaldīt pasūtījumus</a></li>-->
             <li><span class="icon">↩️</span> <a href="../logout.php" style="text-decoration: none; color: inherit;">Iziet</a></li>
         </ul>
     </div>

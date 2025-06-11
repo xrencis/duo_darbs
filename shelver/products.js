@@ -181,4 +181,127 @@ function displayReport(orders) {
     });
     
     reportTotal.textContent = `${totalSum.toFixed(2)} €`;
+}
+
+function addShelf() {
+  const name = document.getElementById('shelf-name').value.trim();
+  const capacity = document.getElementById('shelf-capacity').value;
+  if (!name || !capacity || capacity < 1) {
+    alert('Lūdzu, ievadiet korektus datus!');
+    return;
+  }
+  fetch('shelves.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `action=add&shelf_name=${encodeURIComponent(name)}&capacity=${encodeURIComponent(capacity)}`
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      alert('Plaukts pievienots!');
+      closeShelfModal();
+    } else {
+      alert(data.error || 'Kļūda pievienojot plauktu!');
+    }
+  })
+  .catch(() => alert('Kļūda savienojumā ar serveri!'));
+}
+
+function loadShelvesAndProducts() {
+  fetch('shelves.php', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: 'action=list' })
+    .then(r => r.json()).then(data => {
+      const shelfSelect = document.getElementById('place-shelf');
+      shelfSelect.innerHTML = '';
+      if (data.shelves && data.shelves.length) {
+        data.shelves.forEach(shelf => {
+          const opt = document.createElement('option');
+          opt.value = shelf.id;
+          opt.textContent = `${shelf.name} (kapacitāte: ${shelf.capacity})`;
+          shelfSelect.appendChild(opt);
+        });
+      } else {
+        shelfSelect.innerHTML = '<option disabled>Nav plauktu</option>';
+      }
+    });
+  fetch('products.php', { method: 'POST', body: new URLSearchParams({ action: 'fetch' }) })
+    .then(r => r.json()).then(data => {
+      const prodSelect = document.getElementById('place-product');
+      prodSelect.innerHTML = '';
+      if (data && data.length) {
+        data.forEach(prod => {
+          const opt = document.createElement('option');
+          opt.value = prod.id;
+          opt.textContent = `${prod.name} (${prod.qty} gab.)`;
+          prodSelect.appendChild(opt);
+        });
+      } else {
+        prodSelect.innerHTML = '<option disabled>Nav produktu</option>';
+      }
+    });
+}
+
+function placeProductOnShelf() {
+  const shelfId = document.getElementById('place-shelf').value;
+  const productId = document.getElementById('place-product').value;
+  const qty = parseInt(document.getElementById('place-qty').value, 10);
+  if (!shelfId || !productId || !qty || qty < 1) {
+    alert('Lūdzu, aizpildiet visus laukus korekti!');
+    return;
+  }
+  fetch('shelves.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `action=place&shelf_id=${encodeURIComponent(shelfId)}&product_id=${encodeURIComponent(productId)}&qty=${encodeURIComponent(qty)}`
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      alert('Prece izvietota plauktā!');
+      closePlaceModal();
+    } else {
+      alert(data.error || 'Kļūda izvietojot preci!');
+    }
+  })
+  .catch(() => alert('Kļūda savienojumā ar serveri!'));
+}
+
+function deleteShelf(id) {
+  if (!confirm('Vai tiešām dzēst šo plauktu?')) return;
+  fetch('shelves.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `action=delete&id=${encodeURIComponent(id)}`
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      loadShelvesTable();
+    } else {
+      alert(data.error || 'Kļūda dzēšot plauktu!');
+    }
+  });
+}
+
+function saveEditShelf() {
+  const id = document.getElementById('edit-shelf-id').value;
+  const name = document.getElementById('edit-shelf-name').value.trim();
+  const capacity = document.getElementById('edit-shelf-capacity').value;
+  if (!name || !capacity || capacity < 1) {
+    alert('Lūdzu, ievadiet korektus datus!');
+    return;
+  }
+  fetch('shelves.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `action=edit&id=${encodeURIComponent(id)}&name=${encodeURIComponent(name)}&capacity=${encodeURIComponent(capacity)}`
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.success) {
+      closeEditShelfModal();
+      loadShelvesTable();
+    } else {
+      alert(data.error || 'Kļūda saglabājot plauktu!');
+    }
+  });
 } 

@@ -20,8 +20,6 @@ require_once '../check_session.php';
             <li><span class="icon">🏠</span> Sākums</li>
             <li><span class="icon">🚚</span> <a href="#" onclick="showOrderForm(); return false;" style="text-decoration: none; color: inherit;">Veikt pasūtījumu</a></li>
             <li><span class="icon">📄</span> <a href="#" onclick="showReport(); return false;" style="text-decoration: none; color: inherit;">Izveidot atskaiti</a></li>
-            <li><span class="icon">➕</span> <a href="#" onclick="showAddProductForm(); return false;" style="text-decoration: none; color: inherit;">Pievienot Produktu</a></li>
-            <li><span class="icon">📋</span> <a href="#" onclick="showManageOrders(); return false;" style="text-decoration: none; color: inherit;">Pārvaldīt pasūtījumus</a></li>
             <li><span class="icon">↩️</span> <a href="../logout.php" style="text-decoration: none; color: inherit;">Iziet</a></li>
         </ul>
     </div>
