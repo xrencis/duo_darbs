@@ -21,9 +21,42 @@ function showProducts(data){
  });
  table.innerHTML=html;
 }
-function deleteProduct(id){
- fetch('products.php',{method:'POST',body:new URLSearchParams({action:'delete',id})})
- .then(()=>loadProducts());
+function deleteProduct(id) {
+    fetch('products.php', {
+        method: 'POST',
+        body: new URLSearchParams({ action: 'delete', id })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            loadProducts();
+        } else if (data.error.includes("Nevar dzēst produktu, jo tam ir saistīti")) {
+            if (confirm('Šim produktam ir saistīti ieraksti. Vai vēlaties dzēst produktu kopā ar visiem saistītajiem ierakstiem?')) {
+                fetch('products.php', {
+                    method: 'POST',
+                    body: new URLSearchParams({ action: 'delete', id, force: 'true' })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        loadProducts();
+                    } else {
+                        alert(data.error || 'Kļūda dzēšot produktu!');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Kļūda dzēšot produktu!');
+                });
+            }
+        } else {
+            alert(data.error || 'Kļūda dzēšot produktu!');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Kļūda dzēšot produktu!');
+    });
 }
 function editProduct(id){
  fetch('products.php',{

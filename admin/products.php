@@ -46,9 +46,60 @@ if ($action === 'fetch') {
 }
 
 if ($action === 'delete') {
-    $id = intval($_POST['id']);
-    $conn->query("DELETE FROM products WHERE id=$id");
-    echo json_encode(['success'=>true]);
+    try {
+        if (!isset($_POST['id']) || empty($_POST['id'])) {
+            throw new Exception("Produkta ID nav norādīts!");
+        }
+
+        $id = intval($_POST['id']);
+        if (!$id) {
+            throw new Exception("Nederīgs produkta ID!");
+        }
+
+        // Check if product exists
+        $check = $conn->query("SELECT id FROM products WHERE id = $id");
+        if ($check->num_rows === 0) {
+            throw new Exception("Produkts nav atrasts!");
+        }
+
+        // Check if product has related records
+        $orders_check = $conn->query("SELECT COUNT(*) as order_count FROM orders WHERE product_id = $id");
+        $shelf_check = $conn->query("SELECT COUNT(*) as shelf_count FROM shelf_products WHERE product_id = $id");
+        $order_count = $orders_check->fetch_assoc()['order_count'];
+        $shelf_count = $shelf_check->fetch_assoc()['shelf_count'];
+        
+        if ($order_count > 0 || $shelf_count > 0) {
+            // If force delete is not set, return error
+            if (!isset($_POST['force']) || $_POST['force'] !== 'true') {
+                $error_msg = [];
+                if ($order_count > 0) $error_msg[] = "pasūtījumi";
+                if ($shelf_count > 0) $error_msg[] = "plauktu ieraksti";
+                throw new Exception("Nevar dzēst produktu, jo tam ir saistīti " . implode(" un ", $error_msg) . "!");
+            }
+            
+            // If force delete is set, delete related records first
+            if ($order_count > 0) {
+                if (!$conn->query("DELETE FROM orders WHERE product_id = $id")) {
+                    throw new Exception("Kļūda dzēšot saistītos pasūtījumus!");
+                }
+            }
+            if ($shelf_count > 0) {
+                if (!$conn->query("DELETE FROM shelf_products WHERE product_id = $id")) {
+                    throw new Exception("Kļūda dzēšot saistītos plauktu ierakstus!");
+                }
+            }
+        }
+
+        // Delete product
+        if (!$conn->query("DELETE FROM products WHERE id = $id")) {
+            throw new Exception("Kļūda dzēšot produktu datubāzē!");
+        }
+
+        echo json_encode(['success' => true]);
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+    exit;
 }
 
 if ($action === 'edit') {
