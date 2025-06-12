@@ -29,8 +29,8 @@ function validateProductData($name, $category, $price, $firm, $qty) {
     }
     
     $qty = intval($qty);
-    if ($qty < 0) {
-        return ['valid' => false, 'message' => 'Daudzumam jābūt nenegatīvam skaitlim'];
+    if ($qty < 1) {
+        return ['valid' => false, 'message' => 'Daudzumam jābūt pozitīvam skaitlim'];
     }
     
     return ['valid' => true];

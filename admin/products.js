@@ -97,8 +97,8 @@ function validateAndSaveEditProduct() {
     }
 
     // Quantity validation
-    if (isNaN(qty) || qty < 0) {
-        errorMessage.textContent = 'Daudzumam jābūt nenegatīvam skaitlim';
+    if (isNaN(qty) || qty < 1) {
+        errorMessage.textContent = 'Daudzumam jābūt pozitīvam skaitlim';
         document.getElementById('edit-modal').appendChild(errorMessage);
         return;
     }
@@ -184,8 +184,8 @@ function validateAndAddProduct() {
     }
 
     // Quantity validation
-    if (isNaN(qty) || qty < 0) {
-        errorMessage.textContent = 'Daudzumam jābūt nenegatīvam skaitlim';
+    if (isNaN(qty) || qty < 1) {
+        errorMessage.textContent = 'Daudzumam jābūt pozitīvam skaitlim';
         document.getElementById('add-modal').appendChild(errorMessage);
         return;
     }

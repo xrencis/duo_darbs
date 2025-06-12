@@ -84,8 +84,8 @@ require_once '../check_session.php';
                 <div class="form-group">
                     <label for="add-qty">Daudzums</label>
                     <input type="number" id="add-qty" placeholder="Daudzums" required
-                           min="0"
-                           title="Daudzumam jābūt nenegatīvam skaitlim">
+                           min="1"
+                           title="Daudzumam jābūt pozitīvam skaitlim">
                 </div>
                 <div class="modal-btns">
                     <button onclick="validateAndAddProduct()">Pievienot</button>
@@ -120,8 +120,8 @@ require_once '../check_session.php';
                 <div class="form-group">
                     <label id="edit-qty-label">Daudzums</label>
                     <input type="number" id="edit-qty" placeholder="Daudzums" required
-                           min="0"
-                           title="Daudzumam jābūt nenegatīvam skaitlim">
+                           min="1"
+                           title="Daudzumam jābūt pozitīvam skaitlim">
                 </div>
                 <div class="modal-btns">
                     <button onclick="validateAndSaveEditProduct()">Saglabāt</button>

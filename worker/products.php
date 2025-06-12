@@ -184,8 +184,8 @@ if ($action === 'edit') {
         if (strlen($firm) < 2 || strlen($firm) > 50) {
             throw new Exception("Firmas ID jābūt no 2 līdz 50 rakstzīmēm!");
         }
-        if ($qty < 0) {
-            throw new Exception("Daudzumam jābūt nenegatīvam skaitlim!");
+        if ($qty < 1) {
+            throw new Exception("Daudzumam jābūt pozitīvam skaitlim!");
         }
 
         // Update product
@@ -259,8 +259,8 @@ if ($action === 'add') {
         if (strlen($firm) < 2 || strlen($firm) > 50) {
             throw new Exception("Firmas ID jābūt no 2 līdz 50 rakstzīmēm!");
         }
-        if ($qty < 0) {
-            throw new Exception("Daudzumam jābūt nenegatīvam skaitlim!");
+        if ($qty < 1) {
+            throw new Exception("Daudzumam jābūt pozitīvam skaitlim!");
         }
 
         // Insert new product
