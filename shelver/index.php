@@ -26,36 +26,6 @@ require_once '../check_session.php';
     </div>
     <div class="main">
         <h1 id="main-title">Produkti</h1>
-        <div class="modal-overlay" id="edit-modal-overlay">
-            <div class="modal-box" id="edit-modal">
-                <h2>Rediģēt produktu</h2>
-                <input type="hidden" id="edit-id">
-                <div class="form-group">
-                    <label id="edit-name-label">Nosaukums</label>
-                    <input type="text" id="edit-name" placeholder="Nosaukums">
-                </div>
-                <div class="form-group">
-                    <label id="edit-category-label">Kategorija</label>
-                    <input type="text" id="edit-category" placeholder="Kategorija">
-                </div>
-                <div class="form-group">
-                    <label id="edit-price-label">Cena</label>
-                    <input type="number" id="edit-price" placeholder="Cena">
-                </div>
-                <div class="form-group">
-                    <label id="edit-firm-label">Firmas ID</label>
-                    <input type="text" id="edit-firm" placeholder="Firmas ID">
-                </div>
-                <div class="form-group">
-                    <label id="edit-qty-label">Daudzums</label>
-                    <input type="number" id="edit-qty" placeholder="Daudzums">
-                </div>
-                <div class="modal-btns">
-                    <button onclick="saveEditProduct()">Saglabāt</button>
-                    <button onclick="closeEditModal()">Aizvērt</button>
-                </div>
-            </div>
-        </div>
         <div id="products-table-wrapper">
             <table id="products-table">
                 <tr>
@@ -64,7 +34,6 @@ require_once '../check_session.php';
                     <th>Cena</th>
                     <th>Firmas ID</th>
                     <th>Daudzums</th>
-                    <th>Darbības</th>
                 </tr>
             </table>
         </div>
