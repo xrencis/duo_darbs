@@ -413,7 +413,13 @@ function loadUsers() {
                         editButton.textContent = 'Rediģēt';
                         editButton.onclick = () => showEditUserModal(user);
                         
+                        const deleteButton = document.createElement('button');
+                        deleteButton.className = 'delete';
+                        deleteButton.textContent = 'Dzēst';
+                        deleteButton.onclick = () => deleteUser(user);
+                        
                         actionsDiv.appendChild(editButton);
+                        actionsDiv.appendChild(deleteButton);
                         
                         userDiv.appendChild(userInfoDiv);
                         userDiv.appendChild(actionsDiv);
@@ -519,5 +525,34 @@ function showEditUserModal(user) {
     // Show modal
     requestAnimationFrame(() => {
         modal.classList.add('active');
+    });
+}
+
+function deleteUser(user) {
+    if (!confirm(`Vai tiešām vēlaties dzēst lietotāju "${user.username}"?`)) {
+        return;
+    }
+
+    fetch('delete_user.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            username: user.username
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            loadUsers(); // Reload the user list
+        } else {
+            alert(data.message || 'Kļūda dzēšot lietotāju');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Kļūda dzēšot lietotāju');
     });
 } 
