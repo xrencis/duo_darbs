@@ -2,14 +2,12 @@
 include '../db.php';
 header('Content-Type: application/json');
 
-// Start session and check if user is admin
 session_start();
 if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
     echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
     exit();
 }
 
-// Get JSON data from request
 $data = json_decode(file_get_contents('php://input'), true);
 
 if (!$data || !isset($data['username'])) {
@@ -19,7 +17,6 @@ if (!$data || !isset($data['username'])) {
 
 $username = $conn->real_escape_string($data['username']);
 
-// Prevent deleting the last admin
 $query = "SELECT COUNT(*) as admin_count FROM users WHERE role = 'admin'";
 $result = $conn->query($query);
 $admin_count = $result->fetch_assoc()['admin_count'];
@@ -36,7 +33,6 @@ if ($user['role'] === 'admin' && $admin_count <= 1) {
     exit();
 }
 
-// Delete user
 $query = "DELETE FROM users WHERE username = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("s", $username);

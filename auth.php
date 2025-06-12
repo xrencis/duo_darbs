@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Database connection
 $db = new mysqli('localhost', 'root', '', 'stash');
 
 if ($db->connect_error) {
@@ -12,7 +11,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $db->real_escape_string($_POST['username']);
     $password = $_POST['password'];
 
-    // Get user from database
     $query = "SELECT id, username, password, role FROM users WHERE username = ?";
     $stmt = $db->prepare($query);
     $stmt->bind_param("s", $username);
@@ -22,14 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($result->num_rows === 1) {
         $user = $result->fetch_assoc();
         
-        // Verify password
         if (password_verify($password, $user['password'])) {
-            // Set session variables
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $user['role'];
 
-            // Determine redirect based on role
             $redirect = '';
             switch ($user['role']) {
                 case 'admin':

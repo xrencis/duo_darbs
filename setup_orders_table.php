@@ -5,7 +5,6 @@ if ($db->connect_error) {
     die('Datubāzes kļūda: ' . $db->connect_error);
 }
 
-// Create orders table if it doesn't exist
 $query = "CREATE TABLE IF NOT EXISTS orders (
     id INT AUTO_INCREMENT PRIMARY KEY,
     product_id INT NOT NULL,

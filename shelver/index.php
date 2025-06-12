@@ -93,7 +93,6 @@ require_once '../check_session.php';
             </div>
         </div>
     </div>
-    <!-- Shelf Modal -->
     <div class="modal-overlay" id="shelf-modal-overlay">
         <div class="modal-box">
             <h2>Pievienot plauktu</h2>
@@ -111,7 +110,6 @@ require_once '../check_session.php';
             </div>
         </div>
     </div>
-    <!-- Place Products Modal -->
     <div class="modal-overlay" id="place-modal-overlay">
         <div class="modal-box">
             <h2>Izvietot preces plauktā</h2>
@@ -133,7 +131,6 @@ require_once '../check_session.php';
             </div>
         </div>
     </div>
-    <!-- Edit Shelf Modal -->
     <div class="modal-overlay" id="edit-shelf-modal-overlay">
         <div class="modal-box">
             <h2>Rediģēt plauktu</h2>

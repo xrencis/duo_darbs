@@ -65,7 +65,6 @@ function saveEditProduct(){
  let firm=document.getElementById('edit-firm').value.trim();
  let qty=document.getElementById('edit-qty').value;
 
- // Validate inputs
  if (!name || !category || !price || !firm || !qty) {
   alert('Lūdzu aizpildiet visus laukus!');
   return;
@@ -90,7 +89,7 @@ function saveEditProduct(){
 }
 
 function showOrderForm() {
-    // Load products into the select dropdown
+
     fetch('products.php', {
         method: 'POST',
         body: new URLSearchParams({action: 'fetch'})
@@ -100,7 +99,7 @@ function showOrderForm() {
         const select = document.getElementById('order-product');
         select.innerHTML = '<option value="">Izvēlieties produktu...</option>';
         data.forEach(product => {
-            if (product.qty > 0) { // Only show products that are in stock
+            if (product.qty > 0) {
                 const option = document.createElement('option');
                 option.value = product.id;
                 option.textContent = `${product.name} (Pieejams: ${product.qty})`;
@@ -117,7 +116,6 @@ function showOrderForm() {
 
 function closeOrderModal() {
     document.getElementById('order-modal-overlay').classList.remove('active');
-    // Clear form fields
     document.getElementById('order-product').value = '';
     document.getElementById('order-quantity').value = '';
     document.getElementById('order-customer').value = '';
@@ -134,27 +132,23 @@ function validateOrder() {
     errorMessage.style.marginTop = '10px';
     errorMessage.style.textAlign = 'center';
 
-    // Remove any existing error message
     const existingError = document.querySelector('#order-modal div[style*="color: red"]');
     if (existingError) {
         existingError.remove();
     }
 
-    // Product validation
     if (!productId) {
         errorMessage.textContent = 'Lūdzu izvēlieties produktu';
         document.getElementById('order-modal').appendChild(errorMessage);
         return false;
     }
 
-    // Quantity validation
     if (isNaN(quantity) || quantity <= 0) {
         errorMessage.textContent = 'Daudzumam jābūt lielākam par 0';
         document.getElementById('order-modal').appendChild(errorMessage);
         return false;
     }
 
-    // Customer name validation
     if (!customer) {
         errorMessage.textContent = 'Klienta vārds nevar būt tukšs';
         document.getElementById('order-modal').appendChild(errorMessage);
@@ -173,7 +167,6 @@ function validateOrder() {
         return false;
     }
 
-    // Address validation
     if (!address) {
         errorMessage.textContent = 'Piegādes adrese nevar būt tukša';
         document.getElementById('order-modal').appendChild(errorMessage);
@@ -224,19 +217,15 @@ function submitOrder() {
             successMessage.style.textAlign = 'center';
             successMessage.textContent = 'Pasūtījums veiksmīgi izpildīts!';
             document.getElementById('order-modal').appendChild(successMessage);
-            
-            // Clear form fields after successful order
             document.getElementById('order-product').value = '';
             document.getElementById('order-quantity').value = '';
             document.getElementById('order-customer').value = '';
             document.getElementById('order-address').value = '';
-            
-            // Optionally, close modal after a short delay or allow user to close it
+
             setTimeout(() => {
                 closeOrderModal();
-            }, 2000); // Close after 2 seconds
+            }, 2000);
 
-            // Update the product list immediately
             loadProducts();
         } else {
             const errorMessage = document.createElement('div');
@@ -261,18 +250,14 @@ function submitOrder() {
 function updateDateToMin() {
     const dateFrom = document.getElementById('report-date-from').value;
     const dateTo = document.getElementById('report-date-to');
-    
-    // Set minimum date for "to" date
+
     dateTo.min = dateFrom;
-    
-    // If current "to" date is before "from" date, update it
     if (dateTo.value && dateTo.value < dateFrom) {
         dateTo.value = dateFrom;
     }
 }
 
 function showReport() {
-    // Set default date range (last 30 days to tomorrow)
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const thirtyDaysAgo = new Date();
@@ -286,7 +271,7 @@ function showReport() {
     document.getElementById('report-date-to').min = dateFrom;
     
     document.getElementById('report-modal-overlay').classList.add('active');
-    generateReport(); // Generate initial report
+    generateReport();
 }
 
 function closeReportModal() {
@@ -297,7 +282,6 @@ function generateReport() {
     const dateFrom = document.getElementById('report-date-from').value;
     const dateTo = document.getElementById('report-date-to').value;
 
-    // Validate dates
     if (dateTo < dateFrom) {
         alert('"Līdz datumam" nevar būt pirms "No datuma"!');
         return;
@@ -318,7 +302,6 @@ function generateReport() {
         }
 
         const table = document.getElementById('report-table');
-        // Keep the header row
         table.innerHTML = '<tr><th>Datums</th><th>Produkts</th><th>Daudzums</th><th>Cena</th><th>Kopā</th><th>Klients</th><th>Adrese</th></tr>';
         
         if (data.length === 0) {
@@ -349,7 +332,6 @@ function generateReport() {
             table.appendChild(row);
         });
 
-        // Add total sum row
         const totalRow = document.createElement('tr');
         totalRow.style.fontWeight = 'bold';
         totalRow.innerHTML = `
@@ -371,7 +353,6 @@ function showAddProductForm() {
 
 function closeAddProductModal() {
     document.getElementById('add-product-modal-overlay').style.display = 'none';
-    // Clear form fields
     document.getElementById('add-name').value = '';
     document.getElementById('add-category').value = '';
     document.getElementById('add-price').value = '';
@@ -386,13 +367,11 @@ function submitAddProduct() {
     const firm = document.getElementById('add-firm').value.trim();
     const qty = document.getElementById('add-qty').value;
 
-    // Validate inputs
     if (!name || !category || !price || !firm || !qty) {
         alert('Lūdzu aizpildiet visus laukus!');
         return;
     }
 
-    // Create form data
     const formData = new FormData();
     formData.append('action', 'add');
     formData.append('name', name);
@@ -401,7 +380,6 @@ function submitAddProduct() {
     formData.append('firm', firm);
     formData.append('qty', qty);
 
-    // Send request to add product
     fetch('products.php', {
         method: 'POST',
         body: formData
@@ -411,7 +389,7 @@ function submitAddProduct() {
         if (data.success) {
             alert('Produkts veiksmīgi pievienots!');
             closeAddProductModal();
-            loadProducts(); // Refresh the products list
+            loadProducts();
         } else {
             alert(data.error || 'Kļūda pievienojot produktu!');
         }
@@ -540,7 +518,7 @@ function deleteOrder(orderId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            loadOrders(); // Refresh the orders list
+            loadOrders();
         } else {
             alert(data.error || 'Kļūda dzēšot pasūtījumu!');
         }
@@ -568,7 +546,7 @@ function updateOrderStatus(orderId, newStatus) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            loadOrders(); // Refresh the orders list
+            loadOrders();
         } else {
             alert(data.error || 'Kļūda atjauninot pasūtījuma statusu!');
         }

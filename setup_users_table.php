@@ -5,7 +5,6 @@ if ($db->connect_error) {
     die('Datubāzes kļūda: ' . $db->connect_error);
 }
 
-// Create users table if it doesn't exist
 $query = "CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,

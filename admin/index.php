@@ -21,7 +21,6 @@ require_once '../check_session.php';
             <li><span class="icon">➕</span> <span id="show-add-form">Pievienot produktu</span></li>
             <li><span class="icon">➕</span> <span id="show-add-user">Pievienot lietotāju</span></li>
             <li><span class="icon">👤</span> <span id="show-users">Lietotāji</span></li>
-            <!--<li><span class="icon">📋</span> <a href="#" onclick="showManageOrders(); return false;" style="text-decoration: none; color: inherit;">Pārvaldīt pasūtījumus</a></li>-->
             <li><span class="icon">↩️</span> <a href="../logout.php" style="text-decoration: none; color: inherit;">Iziet</a></li>
         </ul>
     </div>
@@ -141,7 +140,6 @@ require_once '../check_session.php';
         </table>
     </div>
 
-    <!-- Manage Orders Modal -->
     <div class="modal-overlay" id="manage-orders-modal-overlay">
         <div class="modal-box" id="manage-orders-modal" style="max-height: 90vh; overflow-y: auto;">
             <h2>Pārvaldīt pasūtījumus</h2>
@@ -188,7 +186,6 @@ require_once '../check_session.php';
     <script src="products.js"></script>
     <script src="orders.js"></script>
 
-    <!-- User List Modal -->
     <div id="user-list-modal-overlay" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -197,7 +194,6 @@ require_once '../check_session.php';
             </div>
             <div class="modal-body">
                 <div id="user-list-container">
-                    <!-- Users will be loaded here -->
                 </div>
             </div>
         </div>

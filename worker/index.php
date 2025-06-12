@@ -37,7 +37,6 @@ require_once '../check_session.php';
         </table>
     </div>
 
-    <!-- Edit Product Modal -->
     <div class="modal-overlay" id="edit-modal-overlay">
         <div class="modal-box" id="edit-modal">
             <h2>Rediģēt produktu</h2>
@@ -69,7 +68,6 @@ require_once '../check_session.php';
         </div>
     </div>
 
-    <!-- Add Product Modal -->
     <div class="modal-overlay" id="add-product-modal-overlay">
         <div class="modal-box" id="add-product-modal">
             <h2>Pievienot jaunu produktu</h2>
@@ -113,7 +111,6 @@ require_once '../check_session.php';
         </div>
     </div>
 
-    <!-- Manage Orders Modal -->
     <div class="modal-overlay" id="manage-orders-modal-overlay">
         <div class="modal-box" id="manage-orders-modal" style="max-height: 90vh; overflow-y: auto;">
             <h2>Pārvaldīt pasūtījumus</h2>
@@ -157,7 +154,6 @@ require_once '../check_session.php';
         </div>
     </div>
 
-    <!-- Order Form Modal -->
     <div class="modal-overlay" id="order-modal-overlay">
         <div class="modal-box" id="order-modal">
             <h2>Veikt pasūtījumu</h2>
@@ -193,7 +189,6 @@ require_once '../check_session.php';
         </div>
     </div>
 
-    <!-- Report Modal -->
     <div class="modal-overlay" id="report-modal-overlay">
         <div class="modal-box" id="report-modal" style="max-height: 90vh; overflow-y: auto;">
             <h2>Pasūtījumu atskaite</h2>

@@ -102,11 +102,9 @@ if ($action === 'delete_order') {
             throw new Exception("Nederīgs pasūtījuma ID!");
         }
 
-        // Start transaction
         $conn->begin_transaction();
 
         try {
-            // Get order details to restore product quantity
             $stmt = $conn->prepare("SELECT product_id, quantity FROM orders WHERE id = ?");
             $stmt->bind_param("i", $order_id);
             $stmt->execute();
@@ -118,7 +116,6 @@ if ($action === 'delete_order') {
 
             $order = $result->fetch_assoc();
 
-            // Restore product quantity if order was not cancelled
             $stmt = $conn->prepare("SELECT status FROM orders WHERE id = ?");
             $stmt->bind_param("i", $order_id);
             $stmt->execute();
@@ -133,7 +130,6 @@ if ($action === 'delete_order') {
                 }
             }
 
-            // Delete the order
             $stmt = $conn->prepare("DELETE FROM orders WHERE id = ?");
             $stmt->bind_param("i", $order_id);
             
@@ -141,11 +137,9 @@ if ($action === 'delete_order') {
                 throw new Exception("Kļūda dzēšot pasūtījumu!");
             }
 
-            // If everything is successful, commit the transaction
             $conn->commit();
             echo json_encode(['success' => true]);
         } catch (Exception $e) {
-            // If any error occurs, rollback the transaction
             $conn->rollback();
             throw $e;
         }

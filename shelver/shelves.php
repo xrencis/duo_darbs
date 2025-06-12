@@ -32,7 +32,7 @@ if ($action === 'place') {
         echo json_encode(['success' => false, 'error' => 'Nepareizi dati!']);
         exit;
     }
-    // Plaukta kapacitātes pārbaude
+
     $shelf = $conn->query("SELECT capacity FROM shelves WHERE id=$shelf_id")->fetch_assoc();
     if (!$shelf) {
         echo json_encode(['success' => false, 'error' => 'Plaukts nav atrasts!']);
@@ -44,17 +44,17 @@ if ($action === 'place') {
         echo json_encode(['success' => false, 'error' => 'Plaukta kapacitāte pārsniegta!']);
         exit;
     }
-    // Produkta daudzuma pārbaude
+
     $prod = $conn->query("SELECT qty FROM products WHERE id=$product_id")->fetch_assoc();
     if (!$prod || $prod['qty'] < $qty) {
         echo json_encode(['success' => false, 'error' => 'Nepietiek produktu!']);
         exit;
     }
-    // Atjauno produktu daudzumu
+
     $conn->query("UPDATE products SET qty=qty-$qty WHERE id=$product_id");
-    // Samazina plaukta kapacitāti
+
     $conn->query("UPDATE shelves SET capacity=capacity-$qty WHERE id=$shelf_id");
-    // Saglabā izvietojumu
+
     $conn->query("INSERT INTO shelf_products (shelf_id, product_id, qty) VALUES ($shelf_id, $product_id, $qty)");
     echo json_encode(['success' => true]);
     exit;

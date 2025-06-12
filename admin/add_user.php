@@ -7,13 +7,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
     $role = $conn->real_escape_string($_POST['role']);
 
-    // Validate input
     if (empty($username) || empty($password) || empty($role)) {
         echo json_encode(['success' => false, 'message' => 'Visiem laukiem jābūt aizpildītiem']);
         exit();
     }
 
-    // Username validation
     if (strlen($username) < 3 || strlen($username) > 20) {
         echo json_encode(['success' => false, 'message' => 'Lietotājvārds jābūt no 3 līdz 20 rakstzīmēm']);
         exit();
@@ -24,13 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // Check if username contains only numbers
     if (preg_match('/^[0-9]+$/', $username)) {
         echo json_encode(['success' => false, 'message' => 'Lietotājvārds nevar saturēt tikai ciparus']);
         exit();
     }
 
-    // Password validation
     if (strlen($password) < 6) {
         echo json_encode(['success' => false, 'message' => 'Parolei jābūt vismaz 6 rakstzīmēm garai']);
         exit();
@@ -52,7 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // Check if username already exists
     $query = "SELECT id FROM users WHERE username = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("s", $username);
@@ -64,14 +59,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // Hash password using Argon2id
     $hashed_password = password_hash($password, PASSWORD_ARGON2ID, [
         'memory_cost' => 65536,
         'time_cost' => 4,
         'threads' => 3
     ]);
 
-    // Insert new user
     $query = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("sss", $username, $hashed_password, $role);

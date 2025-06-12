@@ -39,7 +39,6 @@
             const confirmPassword = document.getElementById('confirm_password').value;
             const errorMessage = document.getElementById('errorMessage');
 
-            // Username validation
             if (username.length < 3 || username.length > 20) {
                 errorMessage.textContent = 'Lietotājvārds jābūt no 3 līdz 20 rakstzīmēm';
                 errorMessage.style.display = 'block';
@@ -52,14 +51,12 @@
                 return false;
             }
 
-            // Check if username contains only numbers
             if (/^[0-9]+$/.test(username)) {
                 errorMessage.textContent = 'Lietotājvārds nevar saturēt tikai ciparus';
                 errorMessage.style.display = 'block';
                 return false;
             }
 
-            // Password validation
             if (password.length < 6) {
                 errorMessage.textContent = 'Parolei jābūt vismaz 6 rakstzīmēm garai';
                 errorMessage.style.display = 'block';
@@ -78,7 +75,6 @@
                 return false;
             }
 
-            // Confirm password
             if (password !== confirmPassword) {
                 errorMessage.textContent = 'Paroles nesakrīt';
                 errorMessage.style.display = 'block';
@@ -88,7 +84,6 @@
             return true;
         }
 
-        // Real-time password strength indicator
         document.getElementById('password').addEventListener('input', function(e) {
             const password = e.target.value;
             const errorMessage = document.getElementById('errorMessage');

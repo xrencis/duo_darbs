@@ -95,48 +95,41 @@ function validateAndSaveEditProduct() {
     errorMessage.style.marginTop = '10px';
     errorMessage.style.textAlign = 'center';
 
-    // Remove any existing error message
     const existingError = document.querySelector('#edit-modal div[style*="color: red"]');
     if (existingError) {
         existingError.remove();
     }
 
-    // Name validation
     if (!name || /^[\s0]+$/.test(name)) {
         errorMessage.textContent = 'Produkta nosaukums nevar būt tukšs vai saturēt tikai nulles un atstarpes';
         document.getElementById('edit-modal').appendChild(errorMessage);
         return;
     }
 
-    // Category validation
     if (!category) {
         errorMessage.textContent = 'Kategorija nevar būt tukša';
         document.getElementById('edit-modal').appendChild(errorMessage);
         return;
     }
 
-    // Price validation
     if (isNaN(price) || price < 0.01) {
         errorMessage.textContent = 'Cenai jābūt vismaz 0.01';
         document.getElementById('edit-modal').appendChild(errorMessage);
         return;
     }
 
-    // Firm validation
     if (!firm) {
         errorMessage.textContent = 'Firmas ID nevar būt tukšs';
         document.getElementById('edit-modal').appendChild(errorMessage);
         return;
     }
 
-    // Quantity validation
     if (isNaN(qty) || qty < 1) {
         errorMessage.textContent = 'Daudzumam jābūt pozitīvam skaitlim';
         document.getElementById('edit-modal').appendChild(errorMessage);
         return;
     }
 
-    // If all validations pass, proceed with saving the product
     saveEditProduct();
 }
 function saveEditProduct(){
@@ -182,48 +175,41 @@ function validateAndAddProduct() {
     errorMessage.style.marginTop = '10px';
     errorMessage.style.textAlign = 'center';
 
-    // Remove any existing error message
     const existingError = document.querySelector('#add-modal div[style*="color: red"]');
     if (existingError) {
         existingError.remove();
     }
 
-    // Name validation
     if (!name || /^[\s0]+$/.test(name)) {
         errorMessage.textContent = 'Produkta nosaukums nevar būt tukšs vai saturēt tikai nulles un atstarpes';
         document.getElementById('add-modal').appendChild(errorMessage);
         return;
     }
 
-    // Category validation
     if (!category) {
         errorMessage.textContent = 'Kategorija nevar būt tukša';
         document.getElementById('add-modal').appendChild(errorMessage);
         return;
     }
 
-    // Price validation
     if (isNaN(price) || price < 0.01) {
         errorMessage.textContent = 'Cenai jābūt vismaz 0.01';
         document.getElementById('add-modal').appendChild(errorMessage);
         return;
     }
 
-    // Firm validation
     if (!firm) {
         errorMessage.textContent = 'Firmas ID nevar būt tukšs';
         document.getElementById('add-modal').appendChild(errorMessage);
         return;
     }
 
-    // Quantity validation
     if (isNaN(qty) || qty < 1) {
         errorMessage.textContent = 'Daudzumam jābūt pozitīvam skaitlim';
         document.getElementById('add-modal').appendChild(errorMessage);
         return;
     }
 
-    // If all validations pass, proceed with adding the product
     addProduct();
 }
 function addProduct() {
@@ -279,7 +265,6 @@ function validateAndAddUser() {
     errorMessage.style.marginTop = '10px';
     errorMessage.style.textAlign = 'center';
 
-    // Username validation
     if (username.length < 3 || username.length > 20) {
         errorMessage.textContent = 'Lietotājvārds jābūt no 3 līdz 20 rakstzīmēm';
         document.getElementById('add-user-modal').appendChild(errorMessage);
@@ -292,14 +277,12 @@ function validateAndAddUser() {
         return;
     }
 
-    // Check if username contains only numbers
     if (/^[0-9]+$/.test(username)) {
         errorMessage.textContent = 'Lietotājvārds nevar saturēt tikai ciparus';
         document.getElementById('add-user-modal').appendChild(errorMessage);
         return;
     }
 
-    // Password validation
     if (password.length < 6) {
         errorMessage.textContent = 'Parolei jābūt vismaz 6 rakstzīmēm garai';
         document.getElementById('add-user-modal').appendChild(errorMessage);
@@ -318,20 +301,17 @@ function validateAndAddUser() {
         return;
     }
 
-    // Role validation
     if (!['worker', 'shelver', 'admin'].includes(role)) {
         errorMessage.textContent = 'Nederīgs lietotāja tips';
         document.getElementById('add-user-modal').appendChild(errorMessage);
         return;
     }
 
-    // Remove any existing error message
     const existingError = document.querySelector('#add-user-modal div[style*="color: red"]');
     if (existingError) {
         existingError.remove();
     }
 
-    // If all validations pass, proceed with adding the user
     addUser();
 }
 function addUser() {
@@ -382,8 +362,7 @@ function closeUserListModal() {
 }
 function loadUsers() {
     console.log('Loading users...');
-    
-    // First test if PHP is working
+
     fetch('test.php')
         .then(response => {
             console.log('Test response status:', response.status);
@@ -394,7 +373,6 @@ function loadUsers() {
             try {
                 const testData = JSON.parse(text);
                 console.log('Test parsed data:', testData);
-                // If test works, proceed to get users
                 return fetch('get_users.php');
             } catch (e) {
                 console.error('Test failed:', e);
@@ -474,7 +452,6 @@ function loadUsers() {
 }
 
 function showEditUserModal(user) {
-    // Create modal HTML
     const modalHTML = `
         <div class="modal-overlay" id="edit-user-modal-overlay">
             <div class="modal-box">
@@ -503,21 +480,17 @@ function showEditUserModal(user) {
         </div>
     `;
 
-    // Remove any existing modal
     const existingModal = document.getElementById('edit-user-modal-overlay');
     if (existingModal) {
         existingModal.remove();
     }
 
-    // Add new modal to the page
     document.body.insertAdjacentHTML('beforeend', modalHTML);
 
-    // Get modal elements
     const modal = document.getElementById('edit-user-modal-overlay');
     const saveBtn = document.getElementById('save-user-btn');
     const cancelBtn = document.getElementById('cancel-edit-btn');
 
-    // Add event listeners
     saveBtn.addEventListener('click', () => {
         const newRole = document.getElementById('edit-role').value;
         const newPassword = document.getElementById('edit-password').value;
@@ -540,7 +513,7 @@ function showEditUserModal(user) {
             if (data.success) {
                 alert('Lietotājs veiksmīgi atjaunināts');
                 modal.remove();
-                loadUsers(); // Reload the user list
+                loadUsers();
             } else {
                 alert(data.message || 'Kļūda atjauninot lietotāju');
             }
@@ -555,7 +528,6 @@ function showEditUserModal(user) {
         modal.remove();
     });
 
-    // Show modal
     requestAnimationFrame(() => {
         modal.classList.add('active');
     });
@@ -579,7 +551,7 @@ function deleteUser(user) {
     .then(data => {
         if (data.success) {
             alert(data.message);
-            loadUsers(); // Reload the user list
+            loadUsers();
         } else {
             alert(data.message || 'Kļūda dzēšot lietotāju');
         }

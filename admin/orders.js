@@ -116,7 +116,7 @@ function deleteOrder(orderId) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            loadOrders(); // Refresh the orders list
+            loadOrders();
         } else {
             alert(data.error || 'Kļūda dzēšot pasūtījumu!');
         }
@@ -144,7 +144,7 @@ function updateOrderStatus(orderId, newStatus) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            loadOrders(); // Refresh the orders list
+            loadOrders();
         } else {
             alert(data.error || 'Kļūda atjauninot pasūtījuma statusu!');
         }

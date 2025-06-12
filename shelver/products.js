@@ -58,15 +58,13 @@ function saveEditProduct(){
 }
 
 function showReport() {
-    // Set default date range (last 30 days to tomorrow)
     const today = new Date();
     const tomorrow = new Date(today);
     tomorrow.setDate(today.getDate() + 1);
     
     const thirtyDaysAgo = new Date(today);
     thirtyDaysAgo.setDate(today.getDate() - 30);
-    
-    // Format dates as YYYY-MM-DD
+
     const formatDate = (date) => {
         return date.toISOString().split('T')[0];
     };
@@ -76,8 +74,7 @@ function showReport() {
     
     dateFromInput.value = formatDate(thirtyDaysAgo);
     dateToInput.value = formatDate(tomorrow);
-    
-    // Set min date for "to" input to be the same as "from" date
+
     dateToInput.min = dateFromInput.value;
     
     document.getElementById('report-modal-overlay').style.display = 'flex';
@@ -90,11 +87,9 @@ function closeReportModal() {
 function updateDateToMin() {
     const dateFrom = document.getElementById('report-date-from').value;
     const dateToInput = document.getElementById('report-date-to');
-    
-    // Set min date for "to" input
+
     dateToInput.min = dateFrom;
-    
-    // If current "to" date is before new min date, update it
+
     if (dateToInput.value < dateFrom) {
         dateToInput.value = dateFrom;
     }
@@ -109,7 +104,6 @@ function generateReport() {
         return;
     }
 
-    // Add time to make the date range inclusive
     const fromDate = new Date(dateFrom + 'T00:00:00');
     const toDate = new Date(dateTo + 'T23:59:59');
 
@@ -143,8 +137,7 @@ function displayReport(orders) {
     const reportTable = document.getElementById('report-table');
     const reportBody = document.getElementById('report-body');
     const reportTotal = document.getElementById('report-total');
-    
-    // Clear previous results
+
     reportBody.innerHTML = '';
     reportTotal.textContent = '0.00 €';
     
@@ -157,8 +150,7 @@ function displayReport(orders) {
     
     orders.forEach(order => {
         const row = document.createElement('tr');
-        
-        // Format the date
+
         const orderDate = new Date(order.order_date);
         const formattedDate = orderDate.toLocaleDateString('lv-LV', {
             year: 'numeric',

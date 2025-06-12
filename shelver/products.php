@@ -41,12 +41,10 @@ if ($action === 'generate_report') {
         $date_from = $_POST['date_from'] . ' 00:00:00';
         $date_to = $_POST['date_to'] . ' 23:59:59';
 
-        // Validate dates
         if (!strtotime($date_from) || !strtotime($date_to)) {
             throw new Exception("Nederīgs datumu formāts!");
         }
 
-        // Get orders with product details
         $query = "
             SELECT 
                 o.*,

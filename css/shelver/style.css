@@ -76,7 +76,6 @@ button { padding: 8px 18px; border: none; border-radius: 3px; margin-right: 8px;
 .modal-box button:last-child {background:#eee;color:#222;}
 .modal-box button:last-child:hover {background:#ccc;}
 
-/* Report Modal Styles */
 .modal-content {
     background: white;
     padding: 20px;
