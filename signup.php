@@ -12,14 +12,14 @@
             <div class="form-group">
                 <label for="username">Lietotājvārds</label>
                 <input type="text" id="username" name="username" required 
-                       pattern="[a-zA-Z0-9_]{3,20}" 
-                       title="Lietotājvārds jābūt no 3 līdz 20 rakstzīmēm, var saturēt tikai burtus, ciparus un pasvītrojuma zīmi">
+                       pattern="^(?=[^A-Z]*[A-Z])(?=[^0-9]*[0-9])(?=[^_]*_)[A-Za-z0-9_]{3,20}$"
+                       title="Lietotājvārdam jābūt 3-20 simboliem, vismaz 1 lielajam burtam, 1 ciparam un 1 pasvītrojuma zīmei (_). Atļauti tikai burti, cipari un pasvītrojums.">
             </div>
             <div class="form-group">
                 <label for="password">Parole</label>
                 <input type="password" id="password" name="password" required 
-                       pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$"
-                       title="Parolei jābūt vismaz 6 rakstzīmēm garai, jāsatur vismaz viens burts un viens cipars">
+                       pattern="^(?=(?:[^a-z]*[a-z]){3,})(?=[^A-Z]*[A-Z])(?=(?:[^0-9]*[0-9]){2,})(?=[^-]*-)[A-Za-z0-9-]{3,20}$"
+                       title="Parolei jābūt 3-20 simboliem, vismaz 3 mazajiem burtiem, 1 lielajam burtam, 2 cipariem un 1 domuzīmei (-). Atļauti tikai burti, cipari un domuzīme (-)">
             </div>
             <div class="form-group">
                 <label for="confirm_password">Apstiprināt paroli</label>

@@ -31,8 +31,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    if (!preg_match('/^[a-zA-Z0-9_]+$/', $username)) {
-        echo json_encode(['success' => false, 'message' => 'Lietotājvārds var saturēt tikai burtus, ciparus un pasvītrojuma zīmi']);
+    if (!preg_match('/^(?=[^A-Z]*[A-Z])(?=[^0-9]*[0-9])(?=[^_]*_)[A-Za-z0-9_]{3,20}$/', $username)) {
+        echo json_encode(['success' => false, 'message' => 'Lietotājvārdam jābūt 3-20 simboliem, vismaz 1 lielajam burtam, 1 ciparam un 1 pasvītrojuma zīmei (_). Atļauti tikai burti, cipari un pasvītrojums.']);
         exit();
     }
 
@@ -53,13 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    if (!preg_match('/[A-Za-z]/', $password)) {
-        echo json_encode(['success' => false, 'message' => 'Parolei jāsatur vismaz viens burts']);
-        exit();
-    }
-
-    if (!preg_match('/[0-9]/', $password)) {
-        echo json_encode(['success' => false, 'message' => 'Parolei jāsatur vismaz viens cipars']);
+    if (!preg_match('/^(?=(?:[^a-z]*[a-z]){3,})(?=[^A-Z]*[A-Z])(?=(?:[^0-9]*[0-9]){2,})(?=[^-]*-)[A-Za-z0-9-]{3,20}$/', $password)) {
+        echo json_encode(['success' => false, 'message' => 'Parolei jābūt 3-20 simboliem, vismaz 3 mazajiem burtiem, 1 lielajam burtam, 2 cipariem un 1 domuzīmei (-). Atļauti tikai burti, cipari un domuzīme (-)']);
         exit();
     }
 
